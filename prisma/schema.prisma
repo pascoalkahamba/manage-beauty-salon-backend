@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Client {
+  id            Int           @id @default(autoincrement())
+  name          String
+  phone         String
+  email         String        @unique
+  academicLevel String
+  createdAt     DateTime      @default(now())
+  appointments  Appointment[]
+}
+
+model Employee {
+  id            Int           @id @default(autoincrement())
+  name          String
+  role          Role
+  phone         String
+  academicLevel String
+  email         String        @unique
+  hiredAt       DateTime      @default(now())
+  appointments  Appointment[]
+}
+
+model Category {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  services    Service[]
+  products    Product[]
+}
+
+model Service {
+  id           Int           @id @default(autoincrement())
+  categoryId   Int
+  name         String
+  description  String
+  price        Float
+  duration     Int // Duration in minutes
+  appointments Appointment[]
+
+  category Category @relation(fields: [categoryId], references: [id])
+}
+
+model Appointment {
+  id         Int      @id @default(autoincrement())
+  clientId   Int
+  employeeId Int
+  serviceId  Int
+  date       DateTime
+  status     String
+
+  client   Client   @relation(fields: [clientId], references: [id])
+  employee Employee @relation(fields: [employeeId], references: [id])
+  service  Service  @relation(fields: [serviceId], references: [id])
+  payment  Payment?
+}
+
+model Payment {
+  id            Int      @id @default(autoincrement())
+  appointmentId Int      @unique
+  amount        Float
+  paymentMethod String
+  paymentDate   DateTime @default(now())
+  status        String
+
+  appointment Appointment @relation(fields: [appointmentId], references: [id])
+}
+
+model Product {
+  id          Int     @id @default(autoincrement())
+  categoryId  Int
+  name        String
+  price       Float
+  description String?
+  stock       Stock?
+
+  category Category @relation(fields: [categoryId], references: [id])
+}
+
+model Stock {
+  id          Int      @id @default(autoincrement())
+  productId   Int      @unique
+  quantity    Int
+  lastUpdated DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id])
+}
+
+enum Role {
+  EMPLOYEE
+  MANAGER
+}

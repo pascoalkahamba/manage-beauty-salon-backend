@@ -1,0 +1,1 @@
+const jwtConfig = "Pascoal Kahamba";

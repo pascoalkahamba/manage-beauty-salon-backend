@@ -1,0 +1,505 @@
+{
+  "openapi": "3.0.1",
+
+  "info": {
+    "title": "Shopping Cart System",
+    "description": "Um sistema para gerenciar produtos em um carrinho de compras",
+    "version": "1.0.0"
+  },
+
+  "basePath": "/",
+
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+
+  "paths": {
+    "/user": {
+      "post": {
+        "tags": ["User"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Rota para criar usuario",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  }
+                },
+                "required": ["email", "password", "name"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "usuario criado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Usuario criado com sucesso!"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request. Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Invalid input"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Internal server error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/login": {
+      "post": {
+        "tags": ["User"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Rota para autenticar o usuario",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "usuario logado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Usuario logado com sucesso!"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request. Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Invalid input"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Internal server error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/shopping-cart/buy": {
+      "post": {
+        "security": [{ "bearerAuth": [] }],
+        "tags": ["Shopping Cart"],
+        "description": "Processar compra dos produtos no carrinho",
+        "responses": {
+          "500": {
+            "description": "Internal server error!"
+          },
+          "401": {
+            "description": "Token error!"
+          },
+          "200": {
+            "description": "Products successfully bought!"
+          }
+        }
+      }
+    },
+    "/shopping-cart": {
+      "get": {
+        "security": [{ "bearerAuth": [] }],
+        "tags": ["Shopping Cart"],
+        "description": "Listagem do carrinho de compras",
+        "responses": {
+          "500": {
+            "description": "Internal server error!"
+          },
+          "401": {
+            "description": "Token error!"
+          },
+          "200": {
+            "description": "Shopping Cart successfully found!"
+          }
+        }
+      },
+      "delete": {
+        "security": [{ "bearerAuth": [] }],
+        "tags": ["Shopping Cart"],
+        "description": "Devolver todos os produtos do carrinho de compras",
+        "responses": {
+          "500": {
+            "description": "Internal server error!"
+          },
+          "401": {
+            "description": "Token error!"
+          },
+          "200": {
+            "description": "Shopping Cart successfully cleaned!"
+          }
+        }
+      },
+      "post": {
+        "security": [{ "bearerAuth": [] }],
+        "tags": ["Shopping Cart"],
+        "description": "Cadastro de produtos no carrinho",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "product_id": {
+                    "type": "number"
+                  },
+                  "amount": {
+                    "type": "number"
+                  }
+                },
+                "required": ["product_id", "amount"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "500": {
+            "description": "Internal server error!"
+          },
+          "401": {
+            "description": "Token error!"
+          },
+          "200": {
+            "description": "Shopping Cart successfully found!"
+          }
+        }
+      }
+    },
+    "/shopping-cart/{id}": {
+      "delete": {
+        "security": [{ "bearerAuth": [] }],
+        "tags": ["Shopping Cart"],
+        "description": "Eliminar o produto do carrinho de compras",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal server error!"
+          },
+          "401": {
+            "description": "Token error!"
+          },
+          "200": {
+            "description": "Product successfully deleted!"
+          }
+        }
+      },
+      "put": {
+        "security": [{ "bearerAuth": [] }],
+        "tags": ["Shopping Cart"],
+        "description": "Alterar quantidade do produto no carrinho",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "product_id": {
+                    "type": "number"
+                  },
+                  "amount": {
+                    "type": "number"
+                  }
+                },
+                "required": ["product_id", "amount"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "500": {
+            "description": "Internal server error!"
+          },
+          "401": {
+            "description": "Token error!"
+          },
+          "200": {
+            "description": "Shopping Cart successfully found!"
+          }
+        }
+      }
+    },
+    "/product/list": {
+      "get": {
+        "security": [{ "bearerAuth": [] }],
+        "tags": ["Product"],
+        "description": "Listagem de produtos",
+        "responses": {
+          "500": {
+            "description": "Internal server error!"
+          },
+          "401": {
+            "description": "Token error!"
+          },
+          "200": {
+            "description": "Product successfully found!"
+          }
+        }
+      }
+    },
+    "/product": {
+      "post": {
+        "security": [{ "bearerAuth": [] }],
+        "tags": ["Product"],
+        "description": "Cadastro de produto",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "stock": {
+                    "type": "number"
+                  },
+                  "price": {
+                    "type": "number"
+                  }
+                },
+                "required": ["stock", "name", "price"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "500": {
+            "description": "Internal server error!"
+          },
+          "401": {
+            "description": "Token error!"
+          },
+          "200": {
+            "description": "Product successfully found!"
+          }
+        }
+      }
+    },
+    "/product/{id}": {
+      "get": {
+        "security": [{ "bearerAuth": [] }],
+        "tags": ["Product"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "description": "Retornar um produto pelo ID",
+        "responses": {
+          "500": {
+            "description": "Internal server error!"
+          },
+          "401": {
+            "description": "Token error!"
+          },
+          "200": {
+            "description": "Product successfully found!"
+          }
+        }
+      },
+      "delete": {
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["Product"],
+        "description": "Eliminar um produto pelo ID",
+        "responses": {
+          "500": {
+            "description": "Internal server error!"
+          },
+          "401": {
+            "description": "Token error!"
+          },
+          "200": {
+            "description": "Product successfully found!"
+          }
+        }
+      },
+      "put": {
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": ["Product"],
+        "description": "Atualizar um produto pelo ID",
+        "responses": {
+          "500": {
+            "description": "Internal server error!"
+          },
+          "401": {
+            "description": "Token error!"
+          },
+          "200": {
+            "description": "Product successfully found!"
+          }
+        }
+      }
+    }
+  }
+}
