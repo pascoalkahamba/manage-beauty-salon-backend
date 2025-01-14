@@ -11,49 +11,74 @@ const DEFAULT_SELECT = {
 
 export class ProductService {
   static pageMaxItems = 10;
-  async add(productData: ProductModel) {
+  async addProduct(productData: ProductModel) {
+    const { categoryId, description, name, price } = productData;
     const product = await prismaService.prisma.product.create({
-      data: productData,
+      data: {
+        name,
+        description,
+        price,
+        category: { connect: { id: categoryId } },
+      },
       select: DEFAULT_SELECT,
     });
 
+    const allStock = await prismaService.prisma.stock.findMany();
+    await prismaService.prisma.stock.create({
+      data: {
+        product: { connect: { id: product.id } },
+        quantity: allStock.reduce((acc, stock) => acc + stock.quantity, 0) + 1,
+      },
+    });
     return product;
   }
-  async removeById(id: number) {
-    try {
-      const deleted = await prismaService.prisma.product.delete({
-        where: { id },
-        select: DEFAULT_SELECT,
-      });
+  async deleteProductById(productId: number) {
+    const product = await prismaService.prisma.product.findFirst({
+      where: { id: productId },
+    });
+    if (!product) return;
 
-      return deleted;
-    } catch (e) {
-      return false;
-    }
+    const deleted = await prismaService.prisma.product.delete({
+      where: { id: productId },
+      select: DEFAULT_SELECT,
+    });
+
+    return deleted;
   }
-  async update(id: number, productData: ProductModel) {
+  async updateProduct(id: number, productData: ProductModel) {
+    const product = await prismaService.prisma.product.findFirst({
+      where: { id },
+    });
+    if (!product) return;
+
+    if (product.categoryId !== productData.categoryId) {
+      await prismaService.prisma.product.update({
+        where: { id: productData.categoryId },
+        data: {
+          categoryId: productData.categoryId,
+        },
+      });
+    }
     const updated = await prismaService.prisma.product.update({
       where: { id },
       data: productData,
       select: DEFAULT_SELECT,
     });
 
-    console.log(updated);
-
     return updated;
   }
-  async getById(id: number) {
+  async getProductById(productId: number) {
     const product = await prismaService.prisma.product.findFirst({
-      where: { id },
+      where: { id: productId },
       select: DEFAULT_SELECT,
     });
 
+    if (!product) return;
+
     return product;
   }
-  async getProductsList() {
-    let products = await prismaService.prisma.product.findMany({
-      //   skip: page * ProductService.pageMaxItems,
-      //   take: ProductService.pageMaxItems,
+  async getAllProducts() {
+    const products = await prismaService.prisma.product.findMany({
       select: DEFAULT_SELECT,
     });
 
