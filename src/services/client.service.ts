@@ -9,8 +9,23 @@ const DEFAULT_SELECT = {
 };
 
 export class ClientService {
+  async getAllClients() {
+    const clients = await prismaService.prisma.client.findMany({
+      select: DEFAULT_SELECT,
+    });
+    return clients;
+  }
+  async getClientById(id: number) {
+    const client = await prismaService.prisma.client.findFirst({
+      where: { id },
+      select: DEFAULT_SELECT,
+    });
+    if (!client) return;
+    return client;
+  }
+
   async createClient(clientInfo: ClientModel) {
-    const { email, password, phone, username, cellphone } = clientInfo;
+    const { email, password, username, cellphone } = clientInfo;
     const client = await prismaService.prisma.client.findFirst({
       where: { email },
     });
@@ -18,7 +33,23 @@ export class ClientService {
 
     const hashPassword = await bcrypt.hash(password, 10);
     const newClient = await prismaService.prisma.client.create({
-      data: { email, password: hashPassword, phone, username, cellphone },
+      data: {
+        email,
+        password: hashPassword,
+        username,
+        cellphone,
+        profile: {
+          create: {
+            bio: "Fale um pouco sobre você",
+            photo: {
+              create: {
+                url: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-1.png",
+                name: "Default_Name_Of_Photo",
+              },
+            },
+          },
+        },
+      },
       select: DEFAULT_SELECT,
     });
     return newClient;
@@ -57,7 +88,7 @@ export class ClientService {
   }
 
   async updateClient(clientInfo: ClientUpdateT) {
-    const { email, password, phone, username, photo, id, bio } = clientInfo;
+    const { email, password, username, photo, id, bio, cellphone } = clientInfo;
 
     const hashPassword = await bcrypt.hash(password, 10);
 
@@ -72,7 +103,7 @@ export class ClientService {
       data: {
         email,
         password: hashPassword,
-        phone,
+        cellphone,
         username,
         profile: {
           update: {
@@ -90,5 +121,28 @@ export class ClientService {
     });
 
     return updatedClient;
+  }
+
+  async forgotPassword(clientInfo: LoginI) {
+    const { email, password } = clientInfo;
+    const hashPassword = await bcrypt.hash(password, 10);
+
+    const client = await prismaService.prisma.client.findFirst({
+      where: { email },
+    });
+
+    if (!client) {
+      return;
+    }
+
+    const passwordUpdated = await prismaService.prisma.client.update({
+      where: { email },
+      data: {
+        password: hashPassword,
+      },
+      select: DEFAULT_SELECT,
+    });
+
+    return passwordUpdated;
   }
 }
