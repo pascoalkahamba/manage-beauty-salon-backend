@@ -1,7 +1,7 @@
 import { BaseError } from "./baseError";
 import { StatusCodes } from "http-status-codes";
 
-export class UserErrors {
+export class ClientErrors {
   static invalidName() {
     return new BaseError("Nome invalido", StatusCodes.BAD_REQUEST);
   }
@@ -13,16 +13,16 @@ export class UserErrors {
       StatusCodes.LENGTH_REQUIRED
     );
   }
-  static userEmailExists() {
+  static clientEmailExists() {
     return new BaseError(
       "Já existe um usuário com este email",
       StatusCodes.CONFLICT
     );
   }
-  static userNotFound() {
+  static clientNotFound() {
     return new BaseError("Usuário não encontrado", StatusCodes.NOT_FOUND);
   }
-  static userOrPasswordWrong() {
+  static clientOrPasswordWrong() {
     return new BaseError(
       "Email ou senha incorretos",
       StatusCodes.INSUFFICIENT_SPACE_ON_RESOURCE

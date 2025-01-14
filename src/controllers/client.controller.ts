@@ -1,65 +1,197 @@
 import { Request, Response } from "express";
-import { UserService } from "../services/user.service";
-import { UserModel } from "../@types";
 import { handleError } from "../errors/handleError";
-import { UserValidator } from "../validators/user.validator";
 import { BaseError } from "../errors/baseError";
-import { UserErrors } from "../errors/user.errors";
-import { User } from "@prisma/client";
+import { TPathError } from "../@types";
 import jwt from "jsonwebtoken";
 import { StatusCodes } from "http-status-codes";
+import { ZodError } from "zod";
+import { fromError } from "zod-validation-error";
+import {
+  createClientSchema,
+  loginSchema,
+  updateClientSchema,
+} from "../schemas";
+import { ClientService } from "../services/client.service";
+import ClientValidator from "../validators/client.validator";
+import { ClientErrors } from "../errors/client.errors";
 
-const userValidator = new UserValidator();
-const userService = new UserService();
+const clientService = new ClientService();
+const clientValidator = new ClientValidator();
 
-export class UserController {
-  async add(req: Request, res: Response) {
+export default class ClientController {
+  async addClient(req: Request, res: Response) {
     try {
-      const user = req.body as UserModel;
+      const { cellphone, email, password, username } = createClientSchema.parse(
+        req.body
+      );
+      const client = await clientService.createClient({
+        cellphone,
+        email,
+        password,
+        username,
+      });
 
-      await userValidator.validate(user);
+      if (!client) {
+        throw ClientErrors.clientEmailExists();
+      }
 
-      const data = await userService.add(user);
-
-      res.status(StatusCodes.CREATED).json(data);
-    } catch (e) {
-      handleError(e as BaseError, req, res);
+      return res.status(StatusCodes.CREATED).json(client);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromError(error);
+        const { details } = validationError;
+        const pathError = details[0].path[0] as TPathError;
+        clientValidator.validator(pathError, res);
+      } else {
+        return handleError(error as BaseError, res);
+      }
     }
   }
-  async remove(req: Request, res: Response) {
+  async deleteClient(req: Request, res: Response) {
     try {
-      const { id } = req.params as unknown as Pick<User, "id">;
+      const clientId = req.params.clientId as unknown as number;
 
-      const userDeleted = await userService.remove(Number(id));
-      if (!userDeleted) throw UserErrors.userNotFound();
-      res.send(userDeleted);
-    } catch (e) {
-      handleError(e as BaseError, req, res);
+      const clientDeleted = await clientService.deleteClient(clientId);
+      if (!clientDeleted) {
+        throw ClientErrors.clientNotFound();
+      }
+
+      return res.status(StatusCodes.OK).json(clientDeleted);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromError(error);
+        const { details } = validationError;
+        const pathError = details[0].path[0] as TPathError;
+        clientValidator.validator(pathError, res);
+      } else {
+        return handleError(error as BaseError, res);
+      }
+    }
+  }
+  async getAllClients(req: Request, res: Response) {
+    try {
+      const clients = await clientService.getAllClients();
+      return res.status(StatusCodes.OK).json(clients);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromError(error);
+        const { details } = validationError;
+        const pathError = details[0].path[0] as TPathError;
+        clientValidator.validator(pathError, res);
+      } else {
+        return handleError(error as BaseError, res);
+      }
+    }
+  }
+  async getOneClient(req: Request, res: Response) {
+    try {
+      const clientId = req.params.clientId as unknown as number;
+      const client = await clientService.getClientById(clientId);
+      if (!client) {
+        throw ClientErrors.clientNotFound();
+      }
+
+      return res.status(StatusCodes.OK).json(client);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromError(error);
+        const { details } = validationError;
+        const pathError = details[0].path[0] as TPathError;
+        clientValidator.validator(pathError, res);
+      } else {
+        return handleError(error as BaseError, res);
+      }
     }
   }
 
   async login(req: Request, res: Response) {
-    const { email, password } = req.body as Pick<
-      UserModel,
-      "email" | "password"
-    >;
     try {
-      const user = await userService.login(email, password);
-      if (!user) throw UserErrors.userOrPasswordWrong();
+      const { email, password } = loginSchema.parse(req.body);
+
+      const logged = await clientService.login({ email, password });
+
+      if (!logged) {
+        throw ClientErrors.clientNotFound();
+      }
 
       const token = jwt.sign(
-        { id: user.id },
+        { id: logged.id },
         process.env.JWT_SECRET_KEY as string,
-        {
-          expiresIn: "30d",
-        }
+        { expiresIn: "8h" }
       );
-      res.status(StatusCodes.OK).json({
+
+      return res.status(StatusCodes.OK).json({
+        user: logged,
         token,
-        user,
       });
-    } catch (e) {
-      handleError(e as BaseError, req, res);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromError(error);
+        const { details } = validationError;
+        const pathError = details[0].path[0] as TPathError;
+        clientValidator.validator(pathError, res);
+      } else {
+        return handleError(error as BaseError, res);
+      }
+    }
+  }
+
+  async updateClient(req: Request, res: Response) {
+    try {
+      const clientId = req.params.clientId as unknown as number;
+      const { cellphone, email, password, username, bio } =
+        updateClientSchema.parse(req.body);
+
+      const client = await clientService.updateClient({
+        cellphone,
+        bio,
+        id: clientId,
+        email,
+        password,
+        username,
+        photo: {
+          name: req.fileName ?? "",
+          url: req.fileUrl ?? "",
+        },
+      });
+      if (!client) {
+        throw ClientErrors.clientNotFound();
+      }
+      return res.status(StatusCodes.OK).json(client);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromError(error);
+        const { details } = validationError;
+        const pathError = details[0].path[0] as TPathError;
+        clientValidator.validator(pathError, res);
+      } else {
+        return handleError(error as BaseError, res);
+      }
+    }
+  }
+
+  async forgotPassword(req: Request, res: Response) {
+    try {
+      const { email, password } = loginSchema.parse(req.body);
+      const client = await clientService.forgotPassword({
+        email,
+        password,
+      });
+
+      if (!client) {
+        throw ClientErrors.clientNotFound();
+      }
+
+      return res.status(StatusCodes.CREATED).json(client);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromError(error);
+        const { details } = validationError;
+        const pathError = details[0].path[0] as TPathError;
+        clientValidator.validator(pathError, res);
+      } else {
+        return handleError(error as BaseError, res);
+      }
     }
   }
 }

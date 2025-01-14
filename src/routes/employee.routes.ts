@@ -23,6 +23,9 @@ employeeRoutes.post(
   uploadFileMiddleware,
   employeeController.updateEmployee
 );
-employeeRoutes.delete("/deleteEmployee", employeeController.deleteEmployee);
+employeeRoutes.delete(
+  "/deleteEmployee/:employeeId",
+  employeeController.deleteEmployee
+);
 
 export { employeeRoutes };

@@ -10,6 +10,11 @@ const createEmployeeSchema = zod.object({
   role: zod.string() as zod.ZodType<RoleT>,
 });
 
+const createClientSchema = createEmployeeSchema.omit({
+  role: true,
+  academicLevel: true,
+});
+
 const loginSchema = zod.object({
   email: zod.string().email(),
   password: zod.string().min(6),
@@ -38,4 +43,15 @@ const updateEmployeeSchema = createEmployeeSchema
     bio: zod.string().min(10),
   });
 
-export { createEmployeeSchema, updateEmployeeSchema, loginSchema, envSchema };
+const updateClientSchema = updateEmployeeSchema.omit({
+  academicLevel: true,
+});
+
+export {
+  createEmployeeSchema,
+  updateEmployeeSchema,
+  updateClientSchema,
+  loginSchema,
+  envSchema,
+  createClientSchema,
+};
