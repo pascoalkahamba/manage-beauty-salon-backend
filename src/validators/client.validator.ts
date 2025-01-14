@@ -23,15 +23,11 @@ export default class ClientValidator {
         res
       );
     }
-    if (pathError === "contact") {
+    if (pathError === "cellphone") {
       return handleError(
         ClientError.invalidInfo("Contacto do cliente invalido."),
         res
       );
-    }
-
-    if (pathError === "emailAlreadyExist") {
-      return handleError(ClientError.invalidInfo("Email já cadastrado."), res);
     }
   }
 }

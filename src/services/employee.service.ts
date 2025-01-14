@@ -42,7 +42,6 @@ export class EmployeeService {
         username,
         cellphone,
         password: hashPassword,
-
         role,
         academicLevel,
         profile: {
