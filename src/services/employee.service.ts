@@ -10,13 +10,21 @@ const DEFAULT_SELECT = {
 };
 export class EmployeeService {
   async getAllEmployees() {
-    // get all employees
+    const employees = await prismaService.prisma.employee.findMany({
+      select: DEFAULT_SELECT,
+    });
+    return employees;
   }
   async getEmployeeById(id: number) {
-    // get employee by id
+    const employee = await prismaService.prisma.employee.findFirst({
+      where: { id },
+      select: DEFAULT_SELECT,
+    });
+    if (!employee) return;
+    return employee;
   }
-  async createEmployee(employeeInfo: EmployeeModel) {
-    const { email, username, phone, role, academicLevel, password, cellphone } =
+  async addEmployee(employeeInfo: EmployeeModel) {
+    const { email, username, role, academicLevel, password, cellphone } =
       employeeInfo;
     const hashPassword = await bcrypt.hash(password, 10);
 
@@ -34,7 +42,7 @@ export class EmployeeService {
         username,
         cellphone,
         password: hashPassword,
-        phone,
+
         role,
         academicLevel,
         profile: {
@@ -42,8 +50,8 @@ export class EmployeeService {
             bio: "Fale um pouco sobre você",
             photo: {
               create: {
-                url: "https://www.google.com",
-                name: "name_default",
+                url: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-1.png",
+                name: "Default_Name_Of_Photo",
               },
             },
           },
@@ -57,7 +65,6 @@ export class EmployeeService {
     const {
       academicLevel,
       email,
-      phone,
       username,
       password,
       id,
@@ -79,7 +86,6 @@ export class EmployeeService {
         password: hashPassword,
         cellphone,
         email,
-        phone,
         academicLevel,
         profile: {
           update: {
@@ -118,6 +124,29 @@ export class EmployeeService {
     return;
   }
 
+  async forgotPassword(employeeInfo: LoginI) {
+    const { email, password } = employeeInfo;
+    const hashPassword = await bcrypt.hash(password, 10);
+
+    const employee = await prismaService.prisma.employee.findFirst({
+      where: { email },
+    });
+
+    if (!employee) {
+      return;
+    }
+
+    const passwordUpdated = await prismaService.prisma.employee.update({
+      where: { email },
+      data: {
+        password: hashPassword,
+      },
+      select: DEFAULT_SELECT,
+    });
+
+    return passwordUpdated;
+  }
+
   async deleteEmployee(employeeId: number) {
     const employee = await prismaService.prisma.employee.findFirst({
       where: { id: employeeId },
@@ -131,6 +160,5 @@ export class EmployeeService {
     });
 
     return deletedEmployee;
-    // delete employee
   }
 }

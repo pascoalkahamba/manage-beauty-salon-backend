@@ -1,127 +1,174 @@
 import { Request, Response } from "express";
 import { handleError } from "../errors/handleError";
 import { BaseError } from "../errors/baseError";
-import { ShoppingCartService } from "../services/employee.service";
-import { ShoppingCartModel, UserModel } from "../@types";
-import { ProductService } from "../services/product.service";
-import { prismaService } from "../services/prisma.service";
-import { getTotalFromShoppingCart } from "../utils/getTotalFromShoppingCart";
+import { EmployeeService } from "../services/employee.service";
+import { TPathError } from "../@types";
+import jwt from "jsonwebtoken";
 import { StatusCodes } from "http-status-codes";
 import { ZodError } from "zod";
 import { fromError } from "zod-validation-error";
+import EmployeeValidator from "../validators/employee.validator";
+import {
+  createEmployeeSchema,
+  loginSchema,
+  updateEmployeeSchema,
+} from "../schemas";
+import EmployeeError from "../errors/employee.error";
 
-const shoppingCartService = new ShoppingCartService();
-const productService = new ProductService();
+const employeeService = new EmployeeService();
+const employeeValidator = new EmployeeValidator();
 
 export class EmployeeController {
   async addEmployee(req: Request, res: Response) {
     try {
-    } catch (e) {
+      const { academicLevel, cellphone, email, password, role, username } =
+        createEmployeeSchema.parse(req.body);
+      const employee = await employeeService.addEmployee({
+        academicLevel,
+        cellphone,
+        email,
+        password,
+        role,
+        username,
+      });
+
+      if (!employee) {
+        throw EmployeeError.emailAlreadyExist();
+      }
+
+      return res.status(StatusCodes.CREATED).json(employee);
+    } catch (error) {
       if (error instanceof ZodError) {
         const validationError = fromError(error);
         const { details } = validationError;
         const pathError = details[0].path[0] as TPathError;
-        adminValidator.validator(pathError, res);
+        employeeValidator.validator(pathError, res);
       } else {
         return handleError(error as BaseError, res);
       }
     }
   }
-  async removeProduct(req: Request, res: Response) {
+  async deleteEmployee(req: Request, res: Response) {
     try {
-      const productId = req.params.productId as unknown as number;
-      const userId = req.id;
+      const employeeId = req.params.employeeId as unknown as number;
 
-      let removed = await shoppingCartService.removeProduct(productId, userId);
-
-      if (!removed) {
-        // throw an error. Shopping Cart does not exist.
+      const employeeDeleted = await employeeService.deleteEmployee(employeeId);
+      if (!employeeDeleted) {
+        throw EmployeeError.employeeNotFound();
       }
 
-      res.send(removed);
-    } catch (e) {
-      handleError(e as BaseError, req, res);
+      return res.status(StatusCodes.OK).json(employeeDeleted);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromError(error);
+        const { details } = validationError;
+        const pathError = details[0].path[0] as TPathError;
+        employeeValidator.validator(pathError, res);
+      } else {
+        return handleError(error as BaseError, res);
+      }
     }
   }
-  async removeAllProducts(req: Request, res: Response) {
+  async getAllEmployees(req: Request, res: Response) {
     try {
-      const userId = req.id;
-
-      let removed = await shoppingCartService.removeAllProducts(userId);
-
-      if (!removed) {
-        // throw an error. Shopping Cart does not exist.
-        throw new BaseError(
-          "Houve um erro ao eliminar os produtos",
-          StatusCodes.NOT_FOUND
-        );
+      const employees = await employeeService.getAllEmployees();
+      return res.status(StatusCodes.OK).json(employees);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromError(error);
+        const { details } = validationError;
+        const pathError = details[0].path[0] as TPathError;
+        employeeValidator.validator(pathError, res);
+      } else {
+        return handleError(error as BaseError, res);
+      }
+    }
+  }
+  async getOneEmployee(req: Request, res: Response) {
+    try {
+      const employeeId = req.params.employeeId as unknown as number;
+      const employee = await employeeService.getEmployeeById(employeeId);
+      if (!employee) {
+        throw EmployeeError.employeeNotFound();
       }
 
-      res.send(removed);
-    } catch (e) {
-      handleError(e as BaseError, req, res);
+      return res.status(StatusCodes.OK).json(employee);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromError(error);
+        const { details } = validationError;
+        const pathError = details[0].path[0] as TPathError;
+        employeeValidator.validator(pathError, res);
+      } else {
+        return handleError(error as BaseError, res);
+      }
     }
   }
-  async update(req: Request, res: Response) {
+
+  async login(req: Request, res: Response) {
     try {
-      const id = req.params.id;
-      const shoppingCartData = req.body as Pick<ShoppingCartModel, "amount">;
+      const { email, password } = loginSchema.parse(req.body);
 
-      // validate before updating
+      const logged = await employeeService.login({ email, password });
 
-      const updated = await shoppingCartService.updateAmount(
-        +id,
-        shoppingCartData.amount
+      if (!logged) {
+        throw EmployeeError.emailOrPasswordWrong();
+      }
+
+      const token = jwt.sign(
+        { id: logged.id },
+        process.env.JWT_SECRET_KEY as string,
+        { expiresIn: "8h" }
       );
 
-      res.send(updated);
-    } catch (e) {
-      handleError(e as BaseError, req, res);
+      return res.status(StatusCodes.OK).json({
+        user: logged,
+        token,
+      });
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromError(error);
+        const { details } = validationError;
+        const pathError = details[0].path[0] as TPathError;
+        employeeValidator.validator(pathError, res);
+      } else {
+        return handleError(error as BaseError, res);
+      }
     }
   }
-  async getAll(req: Request, res: Response) {
+
+  async updateEmployee(req: Request, res: Response) {
     try {
-      const page = req.params.page;
-      const user_id = req.id;
+      const employeeId = req.params.employeeId as unknown as number;
+      const { academicLevel, cellphone, email, password, username, bio } =
+        updateEmployeeSchema.parse(req.body);
 
-      let shoppingCartList = await shoppingCartService.getShoppingCartByUser(
-        +page,
-        user_id
-      );
-
-      const user = await prismaService.prisma.user.findFirst({
-        where: { id: user_id },
-        select: {
-          name: true,
-          email: true,
-          id: true,
+      const employee = await employeeService.updateEmployee({
+        academicLevel,
+        cellphone,
+        bio,
+        id: employeeId,
+        email,
+        password,
+        username,
+        photo: {
+          name: req.fileName ?? "",
+          url: req.fileUrl ?? "",
         },
       });
-
-      res.send({
-        user,
-        items: shoppingCartList,
-        products: shoppingCartList.length + " produto(s) no carrinho",
-        total:
-          getTotalFromShoppingCart(shoppingCartList).toLocaleString("pt-BR"),
-      });
-    } catch (e) {
-      handleError(e as BaseError, req, res);
+      if (!employee) {
+        throw EmployeeError.employeeNotFound();
+      }
+      return res.status(StatusCodes.OK).json(employee);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromError(error);
+        const { details } = validationError;
+        const pathError = details[0].path[0] as TPathError;
+        employeeValidator.validator(pathError, res);
+      } else {
+        return handleError(error as BaseError, res);
+      }
     }
-  }
-  async buyProductsOnShoppingCart(req: Request, res: Response) {
-    const user_id = req.id;
-
-    let amount = await shoppingCartService.buyProducts(user_id);
-
-    if (amount > 0) {
-      return res.send({
-        message: `Você acabou de comprar ${amount} produto(s) a partir do seu carrinho.`,
-      });
-    }
-
-    return res.send({
-      message: "O seu carrinho está vazio ainda.",
-    });
   }
 }

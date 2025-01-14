@@ -11,11 +11,10 @@ model Client {
   id           Int           @id @default(autoincrement())
   username     String
   password     String
-  phone        String
   email        String        @unique
   createdAt    DateTime      @default(now())
   appointments Appointment[]
-  cellphone    String        @unique
+  cellphone    String
   profile      Profile?
 }
 
@@ -24,12 +23,11 @@ model Employee {
   username      String
   password      String
   role          Role
-  phone         String
   academicLevel String
   email         String        @unique
   hiredAt       DateTime      @default(now())
   appointments  Appointment[]
-  cellphone     String        @unique
+  cellphone     String
   profile       Profile?
 }
 

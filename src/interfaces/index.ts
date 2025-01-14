@@ -4,7 +4,6 @@ export interface EmployeeUpdateI {
   password: string;
   cellphone: string;
   email: string;
-  phone: string;
   academicLevel: string;
   bio: string;
   photo: PictureI;
