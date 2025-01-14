@@ -1,51 +1,30 @@
 import { Request, Response } from "express";
 import { handleError } from "../errors/handleError";
 import { BaseError } from "../errors/baseError";
-import { ShoppingCartService } from "../services/shopping-cart.service";
+import { ShoppingCartService } from "../services/employee.service";
 import { ShoppingCartModel, UserModel } from "../@types";
 import { ProductService } from "../services/product.service";
 import { prismaService } from "../services/prisma.service";
 import { getTotalFromShoppingCart } from "../utils/getTotalFromShoppingCart";
 import { StatusCodes } from "http-status-codes";
+import { ZodError } from "zod";
+import { fromError } from "zod-validation-error";
 
 const shoppingCartService = new ShoppingCartService();
 const productService = new ProductService();
 
-export class ShoppingCartController {
-  async addProduct(req: Request, res: Response) {
+export class EmployeeController {
+  async addEmployee(req: Request, res: Response) {
     try {
-      const shoppingCart = req.body as ShoppingCartModel;
-      shoppingCart.user_id = req.id;
-
-      // validate before (if amount cannot be zero)
-
-      let exists = await prismaService.prisma.shoppingCart.findFirst({
-        where: {
-          user: {
-            id: shoppingCart.user_id,
-          },
-          product: {
-            id: shoppingCart.product_id,
-          },
-        },
-      });
-
-      console.log("exists", exists);
-
-      if (exists) {
-        throw new BaseError(
-          "Este produto já foi adicionado ao carrinho",
-          StatusCodes.CONFLICT
-        );
-      }
-
-      let shoppingCartAdded = await shoppingCartService.addProduct(
-        shoppingCart
-      );
-
-      res.send(shoppingCartAdded);
     } catch (e) {
-      handleError(e as BaseError, req, res);
+      if (error instanceof ZodError) {
+        const validationError = fromError(error);
+        const { details } = validationError;
+        const pathError = details[0].path[0] as TPathError;
+        adminValidator.validator(pathError, res);
+      } else {
+        return handleError(error as BaseError, res);
+      }
     }
   }
   async removeProduct(req: Request, res: Response) {

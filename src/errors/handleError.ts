@@ -1,9 +1,10 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { BaseError } from "./baseError";
 
-export function handleError(error: BaseError, req: Request, res: Response) {
-  return res.status(error.statusCode).send({
+export function handleError(error: BaseError, res: Response) {
+  const statusCode = error.statusCode || 500;
+  return res.status(statusCode).json({
+    status: statusCode,
     message: error.message,
-    statusCode: error.statusCode,
   });
 }

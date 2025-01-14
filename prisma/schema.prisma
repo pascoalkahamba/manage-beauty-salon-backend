@@ -8,24 +8,49 @@ datasource db {
 }
 
 model Client {
-  id            Int           @id @default(autoincrement())
-  name          String
-  phone         String
-  email         String        @unique
-  academicLevel String
-  createdAt     DateTime      @default(now())
-  appointments  Appointment[]
+  id           Int           @id @default(autoincrement())
+  username     String
+  password     String
+  phone        String
+  email        String        @unique
+  createdAt    DateTime      @default(now())
+  appointments Appointment[]
+  cellphone    String        @unique
+  profile      Profile?
 }
 
 model Employee {
   id            Int           @id @default(autoincrement())
-  name          String
+  username      String
+  password      String
   role          Role
   phone         String
   academicLevel String
   email         String        @unique
   hiredAt       DateTime      @default(now())
   appointments  Appointment[]
+  cellphone     String        @unique
+  profile       Profile?
+}
+
+model Profile {
+  id         Int       @id @default(autoincrement())
+  bio        String
+  photo      Picture?
+  client     Client?   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId   Int?      @unique
+  employee   Employee? @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  employeeId Int?      @unique
+}
+
+model Picture {
+  id        Int      @id @default(autoincrement())
+  url       String   @db.LongText
+  name      String
+  profile   Profile? @relation(fields: [profileId], references: [id])
+  service   Service? @relation(fields: [serviceId], references: [id])
+  serviceId Int?     @unique
+  profileId Int?     @unique
 }
 
 model Category {
@@ -44,6 +69,7 @@ model Service {
   price        Float
   duration     Int // Duration in minutes
   appointments Appointment[]
+  picture      Picture?
 
   category Category @relation(fields: [categoryId], references: [id])
 }
