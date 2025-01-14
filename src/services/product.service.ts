@@ -13,6 +13,10 @@ export class ProductService {
   static pageMaxItems = 10;
   async addProduct(productData: ProductModel) {
     const { categoryId, description, name, price } = productData;
+    const productName = await prismaService.prisma.product.findFirst({
+      where: { name },
+    });
+    if (productName) return;
     const product = await prismaService.prisma.product.create({
       data: {
         name,

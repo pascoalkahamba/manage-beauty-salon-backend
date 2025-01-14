@@ -2,77 +2,128 @@ import { Request, Response } from "express";
 import { handleError } from "../errors/handleError";
 import { BaseError } from "../errors/baseError";
 import { ProductService } from "../services/product.service";
-import { ProductModel } from "../@types";
-import { ProductValidator } from "../validators/product.validator";
-import { ProductErrors } from "../errors/product.errors";
+import { ProductModel, TPathError } from "../@types";
+import ProductValidator from "../validators/product.validator";
+import ProductErrors from "../errors/product.errors";
+import { ZodError } from "zod";
+import { fromError } from "zod-validation-error";
+import { productSchema } from "../schemas";
+import { StatusCodes } from "http-status-codes";
 
 const productService = new ProductService();
-
 const productValidator = new ProductValidator();
 
-export class ProductController {
-  async add(req: Request, res: Response) {
+export default class ProductController {
+  async addProduct(req: Request, res: Response) {
     try {
-      const product = req.body as ProductModel;
+      const { name, description, categoryId, price } = productSchema.parse(
+        req.body
+      );
 
-      await productValidator.validate(product);
+      const product = await productService.addProduct({
+        name,
+        description,
+        categoryId,
+        price,
+      });
 
-      let productAdded = await productService.add(product);
-
-      return res.send(productAdded);
-    } catch (e) {
-      handleError(e as BaseError, req, res);
-    }
-  }
-  async remove(req: Request, res: Response) {
-    try {
-      const id = req.params.id as unknown as number;
-
-      let removed = await productService.removeById(id);
-
-      if (!removed) {
-        throw ProductErrors.productNotFound();
+      if (!product) {
+        throw ProductErrors.productAlreadyExist();
       }
 
-      return res.send(removed);
-    } catch (e) {
-      handleError(e as BaseError, req, res);
+      return res.status(StatusCodes.CREATED).json(product);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromError(error);
+        const { details } = validationError;
+        const pathError = details[0].path[0] as TPathError;
+        productValidator.validator(pathError, res);
+      } else {
+        return handleError(error as BaseError, res);
+      }
     }
   }
-  async update(req: Request, res: Response) {
+
+  async deleteProduct(req: Request, res: Response) {
     try {
-      const id = req.params.id;
-      const productData = req.body as ProductModel;
-
-      await productValidator.validate(productData, +id);
-
-      console.log("product", productData);
-
-      const updated = await productService.update(+id, productData);
-
-      return res.send(updated);
-    } catch (e) {
-      handleError(e as BaseError, req, res);
+      const productId = req.params.productId as unknown as number;
+      const productDeleted = await productService.deleteProductById(productId);
+      if (!productDeleted) {
+        throw ProductErrors.productNotFound();
+      }
+      return res.status(StatusCodes.OK).json(productDeleted);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromError(error);
+        const { details } = validationError;
+        const pathError = details[0].path[0] as TPathError;
+        productValidator.validator(pathError, res);
+      } else {
+        return handleError(error as BaseError, res);
+      }
     }
   }
-  async getProductsList(req: Request, res: Response) {
+  async updateProduct(req: Request, res: Response) {
     try {
-      let productList = await productService.getProductsList();
-
-      return res.send(productList);
-    } catch (e) {
-      handleError(e as BaseError, req, res);
+      const productId = req.params.productId as unknown as number;
+      const { name, description, categoryId, price } = productSchema.parse(
+        req.body
+      );
+      const product = await productService.updateProduct(productId, {
+        name,
+        description,
+        categoryId,
+        price,
+      });
+      if (!product) {
+        throw ProductErrors.productNotFound();
+      }
+      return res.status(StatusCodes.OK).json(product);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromError(error);
+        const { details } = validationError;
+        const pathError = details[0].path[0] as TPathError;
+        productValidator.validator(pathError, res);
+      } else {
+        return handleError(error as BaseError, res);
+      }
     }
   }
-  async getById(req: Request, res: Response) {
+
+  async getAllProducts(req: Request, res: Response) {
     try {
-      const productId = req.params.id;
+      const products = await productService.getAllProducts();
+      return res.status(StatusCodes.OK).json(products);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromError(error);
+        const { details } = validationError;
+        const pathError = details[0].path[0] as TPathError;
+        productValidator.validator(pathError, res);
+      } else {
+        return handleError(error as BaseError, res);
+      }
+    }
+  }
 
-      let product = await productService.getById(+productId);
-
-      res.send(product);
-    } catch (e) {
-      handleError(e as BaseError, req, res);
+  async getProductById(req: Request, res: Response) {
+    try {
+      const productId = req.params.productId as unknown as number;
+      const product = await productService.getProductById(productId);
+      if (!product) {
+        throw ProductErrors.productNotFound();
+      }
+      return res.status(StatusCodes.OK).json(product);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromError(error);
+        const { details } = validationError;
+        const pathError = details[0].path[0] as TPathError;
+        productValidator.validator(pathError, res);
+      } else {
+        return handleError(error as BaseError, res);
+      }
     }
   }
 }

@@ -1,21 +1,30 @@
-import { ProductModel, UserModel } from "../@types";
-import { ProductErrors } from "../errors/product.errors";
-import { prismaService } from "../services/prisma.service";
+import { Response } from "express";
+import { TPathError } from "../@types";
+import ProductErrors from "../errors/product.errors";
+import { handleError } from "../errors/handleError";
 
-export class ProductValidator {
-  async validate(product: ProductModel, id?: number) {
-    if (!product.name && !id) throw ProductErrors.invalidName();
-
-    if (product.name) {
-      const productExists = await prismaService.prisma.product.findFirst({
-        where: { name: product.name },
-      });
-
-      if (id && productExists?.id === id) {
-        return;
-      }
-
-      if (productExists) throw ProductErrors.productExists();
+export default class ProductValidator {
+  validator(pathError: TPathError, res: Response) {
+    if (pathError === "name") {
+      return handleError(ProductErrors.invalidName(), res);
+    }
+    if (pathError === "description") {
+      return handleError(
+        ProductErrors.invalidInfo("descrição do produto invalido."),
+        res
+      );
+    }
+    if (pathError === "categoryId") {
+      return handleError(
+        ProductErrors.invalidInfo("Categoria do produto invalido."),
+        res
+      );
+    }
+    if (pathError === "price") {
+      return handleError(
+        ProductErrors.invalidInfo("Preço do produto invalido."),
+        res
+      );
     }
   }
 }

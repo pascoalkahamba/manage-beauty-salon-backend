@@ -20,6 +20,13 @@ const loginSchema = zod.object({
   password: zod.string().min(6),
 });
 
+const productSchema = zod.object({
+  name: zod.string().min(6),
+  description: zod.string().min(10),
+  categoryId: zod.number(),
+  price: zod.number(),
+});
+
 const envSchema = zod.object({
   MONGODBCONNECTION: zod.string(),
   PORT: zod.string(),
@@ -53,5 +60,6 @@ export {
   updateClientSchema,
   loginSchema,
   envSchema,
+  productSchema,
   createClientSchema,
 };
