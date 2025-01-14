@@ -1,29 +1,25 @@
 import express from "express";
-import { userRouter } from "./routes/user.routes";
-import { swaggerDocs } from "./config/swagger";
-import { productRouter } from "./routes/product.routes";
-import { shoppingCartRouter } from "./routes/shopping-cart.routes";
-
 import cors from "cors";
+import bodyParser from "body-parser";
+import { employeeRoutes } from "./routes/employee.routes";
 
 const app = express();
 
+const corsOptions = {
+  origin: ["http://localhost:3000"],
+  credentials: true,
+  optionsSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
+
+app.options("*", cors(corsOptions));
+
+const port = process.env.PORT || 3001;
+
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(
-  cors({
-    origin: "*",
-  })
-);
+app.use("/employee", employeeRoutes);
+app.use(bodyParser.json());
 
-const PORT = process.env.PORT || 3000;
-
-app.use("/user", userRouter);
-app.use("/product", productRouter);
-app.use("/shopping-cart", shoppingCartRouter);
-
-app.listen(PORT, () => {
-  console.log("Server running!");
-
-  swaggerDocs(app, PORT);
+app.listen(port, () => {
+  console.log("server is running!");
 });

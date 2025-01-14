@@ -18,7 +18,7 @@ import EmployeeError from "../errors/employee.error";
 const employeeService = new EmployeeService();
 const employeeValidator = new EmployeeValidator();
 
-export class EmployeeController {
+export default class EmployeeController {
   async addEmployee(req: Request, res: Response) {
     try {
       const { academicLevel, cellphone, email, password, role, username } =
@@ -160,6 +160,31 @@ export class EmployeeController {
         throw EmployeeError.employeeNotFound();
       }
       return res.status(StatusCodes.OK).json(employee);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromError(error);
+        const { details } = validationError;
+        const pathError = details[0].path[0] as TPathError;
+        employeeValidator.validator(pathError, res);
+      } else {
+        return handleError(error as BaseError, res);
+      }
+    }
+  }
+
+  async forgotPassword(req: Request, res: Response) {
+    try {
+      const { email, password } = loginSchema.parse(req.body);
+      const employee = await employeeService.forgotPassword({
+        email,
+        password,
+      });
+
+      if (!employee) {
+        throw EmployeeError.emailNotFound();
+      }
+
+      return res.status(StatusCodes.CREATED).json(employee);
     } catch (error) {
       if (error instanceof ZodError) {
         const validationError = fromError(error);

@@ -17,7 +17,7 @@ export default class EmployeeError {
   static emailNotFound() {
     return new BaseError("Email não foi encontrado.", StatusCodes.NOT_FOUND);
   }
-  static adminNotFound() {
+  static employeeNotFound() {
     return new BaseError(
       "Funcionario não foi encontrado.",
       StatusCodes.NOT_FOUND

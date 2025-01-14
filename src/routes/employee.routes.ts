@@ -1,21 +1,28 @@
 import express from "express";
-import { ShoppingCartController } from "../controllers/shoppingCartController";
-import { authMiddleware } from "../middlewares/auth.middleware";
+import EmployeeController from "../controllers/employee.controller";
+import { authMiddleware } from "../middlewares/authMiddleware";
+import upload from "../config/multerConfig";
+import { uploadFileMiddleware } from "../middlewares/uploadFileMiddleware";
 
-const shoppingCartRouter = express.Router();
+const employeeController = new EmployeeController();
+const employeeRoutes = express.Router();
 
-const shoppingCartController = new ShoppingCartController();
+employeeRoutes.post("/create", employeeController.addEmployee);
+employeeRoutes.post("/login", employeeController.login);
+employeeRoutes.post("/forgotPassword", employeeController.forgotPassword);
 
-shoppingCartRouter.use(authMiddleware);
+employeeRoutes.use(authMiddleware);
 
-shoppingCartRouter.get("/", shoppingCartController.getAll);
-shoppingCartRouter.post("/", shoppingCartController.addProduct);
-shoppingCartRouter.delete("/", shoppingCartController.removeAllProducts);
-shoppingCartRouter.put("/:id", shoppingCartController.update);
-shoppingCartRouter.delete("/:productId", shoppingCartController.removeProduct);
-shoppingCartRouter.post(
-  "/buy",
-  shoppingCartController.buyProductsOnShoppingCart
+employeeRoutes.get(
+  "/getOneEmployee/:employeeId",
+  employeeController.getOneEmployee
 );
+employeeRoutes.post(
+  "/updateInfoProfile/:employeeId",
+  upload.single("file"),
+  uploadFileMiddleware,
+  employeeController.updateEmployee
+);
+employeeRoutes.delete("/deleteEmployee", employeeController.deleteEmployee);
 
-export { shoppingCartRouter };
+export { employeeRoutes };
