@@ -3,6 +3,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import { employeeRoutes } from "./routes/employee.routes";
 import { clientRoutes } from "./routes/client.routes";
+import { productRoutes } from "./routes/product.routes";
 
 const app = express();
 
@@ -20,6 +21,7 @@ const port = process.env.PORT || 3001;
 app.use(express.json());
 app.use("/employee", employeeRoutes);
 app.use("/client", clientRoutes);
+app.use("/product", productRoutes);
 app.use(bodyParser.json());
 
 app.listen(port, () => {

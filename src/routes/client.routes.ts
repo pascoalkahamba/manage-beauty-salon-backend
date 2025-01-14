@@ -14,6 +14,7 @@ clientRoutes.post("/forgotPassword", clientController.forgotPassword);
 clientRoutes.use(authMiddleware);
 
 clientRoutes.get("/getOneClient/:clientId", clientController.getOneClient);
+clientRoutes.get("/getAllClients", clientController.getAllClients);
 clientRoutes.post(
   "/updateInfoProfile/:clientId",
   upload.single("file"),
