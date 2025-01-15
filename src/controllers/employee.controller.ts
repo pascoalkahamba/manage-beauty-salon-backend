@@ -52,7 +52,7 @@ export default class EmployeeController {
     try {
       const employeeId = req.params.employeeId as unknown as number;
 
-      const employeeDeleted = await employeeService.deleteEmployee(employeeId);
+      const employeeDeleted = await employeeService.deleteEmployee(+employeeId);
       if (!employeeDeleted) {
         throw EmployeeError.employeeNotFound();
       }
@@ -87,7 +87,7 @@ export default class EmployeeController {
   async getOneEmployee(req: Request, res: Response) {
     try {
       const employeeId = req.params.employeeId as unknown as number;
-      const employee = await employeeService.getEmployeeById(employeeId);
+      const employee = await employeeService.getEmployeeById(+employeeId);
       if (!employee) {
         throw EmployeeError.employeeNotFound();
       }
@@ -147,7 +147,7 @@ export default class EmployeeController {
         academicLevel,
         cellphone,
         bio,
-        id: employeeId,
+        id: +employeeId,
         email,
         password,
         username,

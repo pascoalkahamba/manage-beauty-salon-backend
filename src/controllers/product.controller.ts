@@ -47,7 +47,7 @@ export default class ProductController {
   async deleteProduct(req: Request, res: Response) {
     try {
       const productId = req.params.productId as unknown as number;
-      const productDeleted = await productService.deleteProductById(productId);
+      const productDeleted = await productService.deleteProductById(+productId);
       if (!productDeleted) {
         throw ProductErrors.productNotFound();
       }
@@ -69,7 +69,7 @@ export default class ProductController {
       const { name, description, categoryId, price } = productSchema.parse(
         req.body
       );
-      const product = await productService.updateProduct(productId, {
+      const product = await productService.updateProduct(+productId, {
         name,
         description,
         categoryId,
@@ -110,7 +110,7 @@ export default class ProductController {
   async getProductById(req: Request, res: Response) {
     try {
       const productId = req.params.productId as unknown as number;
-      const product = await productService.getProductById(productId);
+      const product = await productService.getProductById(+productId);
       if (!product) {
         throw ProductErrors.productNotFound();
       }

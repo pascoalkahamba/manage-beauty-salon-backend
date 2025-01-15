@@ -17,6 +17,7 @@ employeeRoutes.get(
   "/getOneEmployee/:employeeId",
   employeeController.getOneEmployee
 );
+employeeRoutes.get("/getAllEmployees", employeeController.getAllEmployees);
 employeeRoutes.post(
   "/updateInfoProfile/:employeeId",
   upload.single("file"),

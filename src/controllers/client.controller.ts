@@ -51,7 +51,7 @@ export default class ClientController {
     try {
       const clientId = req.params.clientId as unknown as number;
 
-      const clientDeleted = await clientService.deleteClient(clientId);
+      const clientDeleted = await clientService.deleteClient(+clientId);
       if (!clientDeleted) {
         throw ClientErrors.clientNotFound();
       }
@@ -86,7 +86,7 @@ export default class ClientController {
   async getOneClient(req: Request, res: Response) {
     try {
       const clientId = req.params.clientId as unknown as number;
-      const client = await clientService.getClientById(clientId);
+      const client = await clientService.getClientById(+clientId);
       if (!client) {
         throw ClientErrors.clientNotFound();
       }
@@ -145,7 +145,7 @@ export default class ClientController {
       const client = await clientService.updateClient({
         cellphone,
         bio,
-        id: clientId,
+        id: +clientId,
         email,
         password,
         username,

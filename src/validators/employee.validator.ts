@@ -23,16 +23,9 @@ export default class EmployeeValidator {
         res
       );
     }
-    if (pathError === "contact") {
+    if (pathError === "cellphone") {
       return handleError(
         EmployeeError.invalidInfo("Contacto do funcionário invalido."),
-        res
-      );
-    }
-
-    if (pathError === "emailAlreadyExist") {
-      return handleError(
-        EmployeeError.invalidInfo("Email já cadastrado."),
         res
       );
     }
