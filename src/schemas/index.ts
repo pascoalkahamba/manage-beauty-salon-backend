@@ -11,6 +11,28 @@ const createEmployeeSchema = zod.object({
   role: zod.string() as zod.ZodType<RoleT>,
 });
 
+const createCategorySchema = zod.object({
+  name: zod.string().min(6),
+  description: zod.string().min(10),
+  servicesIds: zod.number().array(),
+});
+
+const updateCategorySchema = createCategorySchema.extend({
+  id: zod.number(),
+});
+
+const createServiceSchema = zod.object({
+  name: zod.string().min(6),
+  description: zod.string().min(10),
+  price: zod.number(),
+  duration: zod.number(),
+  categoryId: zod.number(),
+});
+
+const updateServiceSchema = createServiceSchema.extend({
+  id: zod.number(),
+});
+
 const createClientSchema = createEmployeeSchema
   .omit({
     role: true,
@@ -73,4 +95,8 @@ export {
   envSchema,
   productSchema,
   createClientSchema,
+  createCategorySchema,
+  createServiceSchema,
+  updateCategorySchema,
+  updateServiceSchema,
 };
