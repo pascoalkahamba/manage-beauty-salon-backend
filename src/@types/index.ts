@@ -1,8 +1,10 @@
-import { Product, Employee, Client } from "@prisma/client";
+import { Product, Employee, Client, Service, Category } from "@prisma/client";
 import { EmployeeUpdateI } from "../interfaces";
 
 export type DataBaseExtraValues = "createdAt" | "updatedAt" | "id" | "hiredAt";
 export type RoleT = "MANAGER" | "EMPLOYEE";
+export type ServiceModel = Omit<Service, DataBaseExtraValues>;
+export type CategoryModel = Omit<Category, DataBaseExtraValues>;
 export type ClientUpdateT = Omit<EmployeeUpdateI, "academicLevel">;
 export type EmployeeModel = Omit<Employee, DataBaseExtraValues>;
 export type ClientModel = Omit<Client, DataBaseExtraValues>;
@@ -15,7 +17,9 @@ export type TPathError =
   | "username"
   | "role"
   | "description"
-  | "academicLevel"
+  | "academicLevelId"
+  | "categoriesIds"
+  | "servicesIds"
   | "photo"
   | "categoryId"
   | "cellphone"
