@@ -19,16 +19,32 @@ model Client {
 }
 
 model Employee {
-  id            Int           @id @default(autoincrement())
+  id            Int            @id @default(autoincrement())
   username      String
   password      String
   role          Role
-  academicLevel String
-  email         String        @unique
-  hiredAt       DateTime      @default(now())
+  email         String         @unique
+  hiredAt       DateTime       @default(now())
   appointments  Appointment[]
   cellphone     String
   profile       Profile?
+  professions   Profession[]
+  academicLevel AcademicLevel?
+}
+
+model Profession {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String
+  employees   Employee[]
+}
+
+model AcademicLevel {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String
+  employee    Employee? @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  employeeId  Int?      @unique
 }
 
 model Profile {
