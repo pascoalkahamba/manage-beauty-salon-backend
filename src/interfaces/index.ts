@@ -36,5 +36,11 @@ export interface CreateClientI {
   password: string;
   cellphone: string;
   email: string;
-  categories: number[];
+  categoriesIds: number[];
+}
+
+export interface ClientUpdateI extends CreateClientI {
+  id: number;
+  bio: string;
+  photo: PictureI;
 }

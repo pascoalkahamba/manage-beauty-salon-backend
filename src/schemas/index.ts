@@ -5,7 +5,7 @@ const createEmployeeSchema = zod.object({
   username: zod.string().min(6),
   password: zod.string().min(6),
   email: zod.string().email(),
-  services: zod.number().array(),
+  servicesIds: zod.number().array(),
   academicLevelId: zod.number(),
   cellphone: zod.string().min(9).max(9),
   role: zod.string() as zod.ZodType<RoleT>,
@@ -15,10 +15,10 @@ const createClientSchema = createEmployeeSchema
   .omit({
     role: true,
     academicLevelId: true,
-    services: true,
+    servicesIds: true,
   })
   .extend({
-    categories: zod.number().array(),
+    categoriesIds: zod.number().array(),
   });
 
 const loginSchema = zod.object({
@@ -59,10 +59,10 @@ const updateEmployeeSchema = createEmployeeSchema
 const updateClientSchema = updateEmployeeSchema
   .omit({
     academicLevelId: true,
-    services: true,
+    servicesIds: true,
   })
   .extend({
-    categories: zod.number().array(),
+    categoriesIds: zod.number().array(),
   });
 
 export {

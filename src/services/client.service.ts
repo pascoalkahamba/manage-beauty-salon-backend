@@ -1,7 +1,7 @@
-import { ClientModel, ClientUpdateT } from "../@types";
+import { ClientUpdateT } from "../@types";
 import { prismaService } from "./prisma.service";
 import bcrypt from "bcrypt";
-import { LoginI } from "../interfaces";
+import { ClientUpdateI, CreateClientI, LoginI } from "../interfaces";
 
 const DEFAULT_SELECT = {
   username: true,
@@ -24,12 +24,22 @@ export class ClientService {
     return client;
   }
 
-  async createClient(clientInfo: ClientModel) {
-    const { email, password, username, cellphone } = clientInfo;
+  async createClient(clientInfo: CreateClientI) {
+    const { email, password, username, cellphone, categoriesIds } = clientInfo;
     const client = await prismaService.prisma.client.findFirst({
       where: { email },
     });
     if (client) return;
+
+    const categories = await prismaService.prisma.category.findMany({
+      where: {
+        id: {
+          in: categoriesIds,
+        },
+      },
+    });
+
+    if (categories.length === 0) return;
 
     const hashPassword = await bcrypt.hash(password, 10);
     const newClient = await prismaService.prisma.client.create({
@@ -38,6 +48,9 @@ export class ClientService {
         password: hashPassword,
         username,
         cellphone,
+        categories: {
+          connect: categories.map((category) => ({ id: category.id })),
+        },
         profile: {
           create: {
             bio: "Fale um pouco sobre você",
@@ -87,8 +100,17 @@ export class ClientService {
     return userDeleted;
   }
 
-  async updateClient(clientInfo: ClientUpdateT) {
-    const { email, password, username, photo, id, bio, cellphone } = clientInfo;
+  async updateClient(clientInfo: ClientUpdateI) {
+    const {
+      email,
+      password,
+      username,
+      photo,
+      id,
+      bio,
+      cellphone,
+      categoriesIds,
+    } = clientInfo;
 
     const hashPassword = await bcrypt.hash(password, 10);
 
@@ -98,6 +120,15 @@ export class ClientService {
 
     if (!client) return;
 
+    const categories = await prismaService.prisma.category.findMany({
+      where: {
+        id: {
+          in: categoriesIds,
+        },
+      },
+    });
+    if (categories.length === 0) return;
+
     const updatedClient = await prismaService.prisma.client.update({
       where: { id },
       data: {
@@ -105,6 +136,9 @@ export class ClientService {
         password: hashPassword,
         cellphone,
         username,
+        categories: {
+          set: categories.map((category) => ({ id: category.id })),
+        },
         profile: {
           update: {
             bio,

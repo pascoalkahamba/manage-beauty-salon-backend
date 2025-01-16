@@ -21,10 +21,18 @@ const employeeValidator = new EmployeeValidator();
 export default class EmployeeController {
   async addEmployee(req: Request, res: Response) {
     try {
-      const { academicLevel, cellphone, email, password, role, username } =
-        createEmployeeSchema.parse(req.body);
+      const {
+        academicLevelId,
+        cellphone,
+        email,
+        password,
+        role,
+        username,
+        servicesIds,
+      } = createEmployeeSchema.parse(req.body);
       const employee = await employeeService.addEmployee({
-        academicLevel,
+        academicLevelId,
+        servicesIds,
         cellphone,
         email,
         password,
@@ -140,12 +148,20 @@ export default class EmployeeController {
   async updateEmployee(req: Request, res: Response) {
     try {
       const employeeId = req.params.employeeId as unknown as number;
-      const { academicLevel, cellphone, email, password, username, bio } =
-        updateEmployeeSchema.parse(req.body);
+      const {
+        academicLevelId,
+        cellphone,
+        email,
+        password,
+        username,
+        bio,
+        servicesIds,
+      } = updateEmployeeSchema.parse(req.body);
 
       const employee = await employeeService.updateEmployee({
-        academicLevel,
+        academicLevelId,
         cellphone,
+        servicesIds,
         bio,
         id: +employeeId,
         email,

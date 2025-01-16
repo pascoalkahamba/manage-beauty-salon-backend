@@ -21,12 +21,12 @@ const clientValidator = new ClientValidator();
 export default class ClientController {
   async addClient(req: Request, res: Response) {
     try {
-      const { cellphone, email, password, username } = createClientSchema.parse(
-        req.body
-      );
+      const { cellphone, email, password, username, categoriesIds } =
+        createClientSchema.parse(req.body);
       const client = await clientService.createClient({
         cellphone,
         email,
+        categoriesIds,
         password,
         username,
       });
@@ -139,11 +139,12 @@ export default class ClientController {
   async updateClient(req: Request, res: Response) {
     try {
       const clientId = req.params.clientId as unknown as number;
-      const { cellphone, email, password, username, bio } =
+      const { cellphone, email, password, username, bio, categoriesIds } =
         updateClientSchema.parse(req.body);
 
       const client = await clientService.updateClient({
         cellphone,
+        categoriesIds,
         bio,
         id: +clientId,
         email,
