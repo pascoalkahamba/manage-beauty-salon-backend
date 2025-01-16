@@ -14,37 +14,31 @@ model Client {
   email        String        @unique
   createdAt    DateTime      @default(now())
   appointments Appointment[]
+  categories   Category[]
   cellphone    String
   profile      Profile?
 }
 
 model Employee {
-  id            Int            @id @default(autoincrement())
-  username      String
-  password      String
-  role          Role
-  email         String         @unique
-  hiredAt       DateTime       @default(now())
-  appointments  Appointment[]
-  cellphone     String
-  profile       Profile?
-  professions   Profession[]
-  academicLevel AcademicLevel?
+  id              Int            @id @default(autoincrement())
+  username        String
+  password        String
+  role            Role
+  email           String         @unique
+  hiredAt         DateTime       @default(now())
+  appointments    Appointment[]
+  cellphone       String
+  profile         Profile?
+  services        Service[]
+  academicLevel   AcademicLevel @relation(fields: [academicLevelId], references: [id])
+  academicLevelId Int
 }
 
-model Profession {
+model AcademicLevel {
   id          Int        @id @default(autoincrement())
   name        String
   description String
   employees   Employee[]
-}
-
-model AcademicLevel {
-  id          Int       @id @default(autoincrement())
-  name        String
-  description String
-  employee    Employee? @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-  employeeId  Int?      @unique
 }
 
 model Profile {
@@ -72,6 +66,7 @@ model Category {
   name        String
   description String?
   services    Service[]
+  clients     Client[]
   products    Product[]
 }
 
@@ -84,6 +79,7 @@ model Service {
   duration     Int // Duration in minutes
   appointments Appointment[]
   picture      Picture?
+  employees    Employee[]
 
   category Category @relation(fields: [categoryId], references: [id])
 }

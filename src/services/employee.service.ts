@@ -2,7 +2,7 @@ import { Role } from "@prisma/client";
 import { EmployeeModel } from "../@types";
 import { prismaService } from "./prisma.service";
 import bcrypt from "bcrypt";
-import { EmployeeUpdateI, LoginI } from "../interfaces";
+import { CreateEmployeeI, EmployeeUpdateI, LoginI } from "../interfaces";
 const DEFAULT_SELECT = {
   username: true,
   email: true,
@@ -23,9 +23,16 @@ export class EmployeeService {
     if (!employee) return;
     return employee;
   }
-  async addEmployee(employeeInfo: EmployeeModel) {
-    const { email, username, role, academicLevel, password, cellphone } =
-      employeeInfo;
+  async addEmployee(employeeInfo: CreateEmployeeI) {
+    const {
+      email,
+      username,
+      role,
+      academicLevelId,
+      password,
+      cellphone,
+      servicesIds,
+    } = employeeInfo;
     const hashPassword = await bcrypt.hash(password, 10);
 
     const employee = await prismaService.prisma.employee.findFirst({
@@ -34,6 +41,23 @@ export class EmployeeService {
       },
     });
 
+    const academicLevel = await prismaService.prisma.academicLevel.findFirst({
+      where: {
+        id: academicLevelId,
+      },
+    });
+    if (!academicLevel) return;
+
+    const services = await prismaService.prisma.service.findMany({
+      where: {
+        id: {
+          in: servicesIds,
+        },
+      },
+    });
+
+    if (services.length === 0) return;
+
     if (employee) return;
 
     const newEmployee = await prismaService.prisma.employee.create({
@@ -41,9 +65,16 @@ export class EmployeeService {
         email,
         username,
         cellphone,
+        academicLevel: {
+          connect: {
+            id: academicLevelId,
+          },
+        },
         password: hashPassword,
+        services: {
+          connect: servicesIds.map((id) => ({ id })),
+        },
         role,
-        academicLevel,
         profile: {
           create: {
             bio: "Fale um pouco sobre você",
@@ -62,7 +93,8 @@ export class EmployeeService {
   }
   async updateEmployee(employeeUpdate: EmployeeUpdateI) {
     const {
-      academicLevel,
+      academicLevelId,
+      servicesIds,
       email,
       username,
       password,
@@ -78,6 +110,22 @@ export class EmployeeService {
 
     if (!employee) return;
 
+    const academicLevel = await prismaService.prisma.academicLevel.findFirst({
+      where: {
+        id: academicLevelId,
+      },
+    });
+
+    if (!academicLevel) return;
+    const services = await prismaService.prisma.service.findMany({
+      where: {
+        id: {
+          in: servicesIds,
+        },
+      },
+    });
+    if (services.length === 0) return;
+
     const updatedEmployee = await prismaService.prisma.employee.update({
       where: { id },
       data: {
@@ -85,7 +133,14 @@ export class EmployeeService {
         password: hashPassword,
         cellphone,
         email,
-        academicLevel,
+        academicLevel: {
+          connect: {
+            id: academicLevelId,
+          },
+        },
+        services: {
+          set: servicesIds.map((id) => ({ id })),
+        },
         profile: {
           update: {
             bio,

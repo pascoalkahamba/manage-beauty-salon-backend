@@ -1,12 +1,15 @@
+import { RoleT } from "../@types";
+
 export interface EmployeeUpdateI {
   id: number;
   username: string;
   password: string;
   cellphone: string;
   email: string;
-  academicLevel: string;
+  academicLevelId: number;
   bio: string;
   photo: PictureI;
+  servicesIds: number[];
 }
 
 export interface PictureI {
@@ -17,4 +20,21 @@ export interface PictureI {
 export interface LoginI {
   email: string;
   password: string;
+}
+
+export interface CreateEmployeeI {
+  username: string;
+  password: string;
+  cellphone: string;
+  email: string;
+  academicLevelId: number;
+  servicesIds: number[];
+  role: RoleT;
+}
+export interface CreateClientI {
+  username: string;
+  password: string;
+  cellphone: string;
+  email: string;
+  categories: number[];
 }
