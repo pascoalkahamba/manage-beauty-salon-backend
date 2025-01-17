@@ -1,13 +1,14 @@
-import { Role } from "@prisma/client";
-import { EmployeeModel } from "../@types";
 import { prismaService } from "./prisma.service";
 import bcrypt from "bcrypt";
 import { CreateEmployeeI, EmployeeUpdateI, LoginI } from "../interfaces";
+import CodeValidationToEmployeeService from "./codeValidationToEmployee.service";
 const DEFAULT_SELECT = {
   username: true,
   email: true,
   role: true,
 };
+
+const codeValidationToEmployeeService = new CodeValidationToEmployeeService();
 export class EmployeeService {
   async getAllEmployees() {
     const employees = await prismaService.prisma.employee.findMany({
@@ -30,10 +31,16 @@ export class EmployeeService {
       role,
       academicLevelId,
       password,
+      validationCode,
       cellphone,
       servicesIds,
     } = employeeInfo;
     const hashPassword = await bcrypt.hash(password, 10);
+
+    const codeValidation =
+      await codeValidationToEmployeeService.getCodeByCharacters(validationCode);
+
+    if (!codeValidation) "codeNotFound";
 
     const employee = await prismaService.prisma.employee.findFirst({
       where: {
@@ -89,6 +96,7 @@ export class EmployeeService {
       },
       select: DEFAULT_SELECT,
     });
+    await codeValidationToEmployeeService.deleteCode(validationCode);
     return newEmployee;
   }
   async updateEmployee(employeeUpdate: EmployeeUpdateI) {

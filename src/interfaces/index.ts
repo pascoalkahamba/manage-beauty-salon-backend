@@ -26,6 +26,7 @@ export interface CreateEmployeeI {
   username: string;
   password: string;
   cellphone: string;
+  validationCode: string;
   email: string;
   academicLevelId: number;
   servicesIds: number[];
