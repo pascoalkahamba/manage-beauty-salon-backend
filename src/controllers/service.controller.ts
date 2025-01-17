@@ -22,6 +22,10 @@ export default class ServiceController {
         name,
         description,
         duration,
+        photo: {
+          name: req.fileName ?? "",
+          url: req.fileUrl ?? "",
+        },
         price,
         categoryId,
       });
@@ -30,6 +34,95 @@ export default class ServiceController {
         throw ServiceError.serviceAlreadyExists();
       }
       return res.status(StatusCodes.CREATED).json(service);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromError(error);
+        const { details } = validationError;
+        const pathError = details[0].path[0] as TPathError;
+        serviceValidator.validator(pathError, res);
+      } else {
+        return handleError(error as BaseError, res);
+      }
+    }
+  }
+
+  async getAllServices(req: Request, res: Response) {
+    try {
+      const services = await serviceService.getAllServices();
+      return res.status(StatusCodes.OK).json(services);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromError(error);
+        const { details } = validationError;
+        const pathError = details[0].path[0] as TPathError;
+        serviceValidator.validator(pathError, res);
+      } else {
+        return handleError(error as BaseError, res);
+      }
+    }
+  }
+
+  async getOneService(req: Request, res: Response) {
+    try {
+      const serviceId = req.params.serviceId as unknown as number;
+      const service = await serviceService.getServiceById(+serviceId);
+      if (!service) {
+        throw ServiceError.serviceNotFound();
+      }
+      return res.status(StatusCodes.OK).json(service);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromError(error);
+        const { details } = validationError;
+        const pathError = details[0].path[0] as TPathError;
+        serviceValidator.validator(pathError, res);
+      } else {
+        return handleError(error as BaseError, res);
+      }
+    }
+  }
+
+  async updateService(req: Request, res: Response) {
+    try {
+      const serviceId = req.params.serviceId as unknown as number;
+      const { name, description, price, categoryId, duration } =
+        createServiceSchema.parse(req.body);
+      const service = await serviceService.updateService({
+        id: serviceId,
+        name,
+        description,
+        duration,
+        photo: {
+          name: req.fileName ?? "",
+          url: req.fileUrl ?? "",
+        },
+        price,
+        categoryId,
+      });
+      if (!service) {
+        throw ServiceError.serviceNotFound();
+      }
+      return res.status(StatusCodes.OK).json(service);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromError(error);
+        const { details } = validationError;
+        const pathError = details[0].path[0] as TPathError;
+        serviceValidator.validator(pathError, res);
+      } else {
+        return handleError(error as BaseError, res);
+      }
+    }
+  }
+
+  async deleteService(req: Request, res: Response) {
+    try {
+      const serviceId = req.params.serviceId as unknown as number;
+      const service = await serviceService.deleteService(+serviceId);
+      if (!service) {
+        throw ServiceError.serviceNotFound();
+      }
+      return res.status(StatusCodes.OK).json(service);
     } catch (error) {
       if (error instanceof ZodError) {
         const validationError = fromError(error);

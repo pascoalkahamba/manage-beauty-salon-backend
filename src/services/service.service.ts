@@ -1,4 +1,5 @@
 import { ServiceModel } from "../@types";
+import { CreateServiceI, UpdateServiceI } from "../interfaces";
 import { prismaService } from "./prisma.service";
 
 export default class ServiceService {
@@ -40,8 +41,9 @@ export default class ServiceService {
     return service;
   }
 
-  async addService(serviceInfo: ServiceModel) {
-    const { name, price, duration, categoryId, description } = serviceInfo;
+  async addService(serviceInfo: CreateServiceI) {
+    const { name, price, duration, categoryId, description, photo } =
+      serviceInfo;
     const service = await prismaService.prisma.service.findFirst({
       where: {
         name,
@@ -62,6 +64,12 @@ export default class ServiceService {
         price,
         duration,
         description,
+        picture: {
+          create: {
+            url: photo.url,
+            name: photo.name,
+          },
+        },
         category: {
           connect: {
             id: categoryId,
@@ -72,11 +80,12 @@ export default class ServiceService {
     return newService;
   }
 
-  async updateService(serviceId: number, serviceInfo: ServiceModel) {
-    const { name, price, duration, categoryId, description } = serviceInfo;
+  async updateService(serviceInfo: UpdateServiceI) {
+    const { name, price, duration, categoryId, description, id, photo } =
+      serviceInfo;
     const service = await prismaService.prisma.service.findFirst({
       where: {
-        id: serviceId,
+        id,
       },
     });
     if (!service) return;
@@ -89,12 +98,18 @@ export default class ServiceService {
 
     const updatedService = await prismaService.prisma.service.update({
       where: {
-        id: serviceId,
+        id,
       },
       data: {
         name,
         price,
         duration,
+        picture: {
+          update: {
+            url: photo.url,
+            name: photo.name,
+          },
+        },
         description,
         category: {
           connect: {

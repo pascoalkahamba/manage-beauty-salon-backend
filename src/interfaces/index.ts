@@ -39,6 +39,18 @@ export interface CreateClientI {
   categoriesIds: number[];
 }
 
+export interface CreateServiceI {
+  name: string;
+  description: string;
+  duration: number;
+  categoryId: number;
+  price: number;
+  photo: PictureI;
+}
+
+export interface UpdateServiceI extends CreateServiceI {
+  id: number;
+}
 export interface CreateCategoryI {
   name: string;
   description?: string;
