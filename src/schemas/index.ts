@@ -17,9 +17,7 @@ const createCategorySchema = zod.object({
   servicesIds: zod.number().array(),
 });
 
-const updateCategorySchema = createCategorySchema.extend({
-  id: zod.number(),
-});
+const updateCategorySchema = createCategorySchema;
 
 const createServiceSchema = zod.object({
   name: zod.string().min(6),
@@ -29,9 +27,7 @@ const createServiceSchema = zod.object({
   categoryId: zod.number(),
 });
 
-const updateServiceSchema = createServiceSchema.extend({
-  id: zod.number(),
-});
+const updateServiceSchema = createServiceSchema;
 
 const createClientSchema = createEmployeeSchema
   .omit({

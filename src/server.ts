@@ -4,6 +4,8 @@ import bodyParser from "body-parser";
 import { employeeRoutes } from "./routes/employee.routes";
 import { clientRoutes } from "./routes/client.routes";
 import { productRoutes } from "./routes/product.routes";
+import { serviceRoutes } from "./routes/service.routes";
+import { categoryRoutes } from "./routes/category.routes";
 
 const app = express();
 
@@ -22,6 +24,8 @@ app.use(express.json());
 app.use("/employee", employeeRoutes);
 app.use("/client", clientRoutes);
 app.use("/product", productRoutes);
+app.use("/service", serviceRoutes);
+app.use("/category", categoryRoutes);
 app.use(bodyParser.json());
 
 app.listen(port, () => {
