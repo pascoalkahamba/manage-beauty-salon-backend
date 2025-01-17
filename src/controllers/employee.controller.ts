@@ -14,6 +14,7 @@ import {
   updateEmployeeSchema,
 } from "../schemas";
 import EmployeeError from "../errors/employee.error";
+import { CodeValidationToEmplyeeError } from "../errors/codeValidationToEmployee";
 
 const employeeService = new EmployeeService();
 const employeeValidator = new EmployeeValidator();
@@ -28,17 +29,22 @@ export default class EmployeeController {
         password,
         role,
         username,
+        validationCode,
         servicesIds,
       } = createEmployeeSchema.parse(req.body);
       const employee = await employeeService.addEmployee({
         academicLevelId,
         servicesIds,
         cellphone,
+        validationCode,
         email,
         password,
         role,
         username,
       });
+
+      if (employee === "codeNotFound")
+        throw CodeValidationToEmplyeeError.codeDoesntExists();
 
       if (!employee) {
         throw EmployeeError.emailAlreadyExist();

@@ -1,10 +1,12 @@
 import { z as zod } from "zod";
 import { RoleT } from "../@types";
+import { EMPLOYEE_CODE_REGEX } from "../utils";
 
 const createEmployeeSchema = zod.object({
   username: zod.string().min(6),
   password: zod.string().min(6),
   email: zod.string().email(),
+  validationCode: zod.string().regex(EMPLOYEE_CODE_REGEX),
   servicesIds: zod.number().array(),
   academicLevelId: zod.number(),
   cellphone: zod.string().min(9).max(9),

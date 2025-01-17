@@ -25,6 +25,7 @@ export type TPathError =
   | "email"
   | "password"
   | "characters"
+  | "validationCode"
   | "contact"
   | "username"
   | "role"

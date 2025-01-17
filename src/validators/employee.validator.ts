@@ -11,6 +11,14 @@ export default class EmployeeValidator {
         res
       );
     }
+    if (pathError === "validationCode") {
+      return handleError(
+        EmployeeError.invalidInfo(
+          "Codigo de permissão para criar funcionário invalido, deve conter 8 digitos um numero e uma letra e um caracter especial (@$!%*#?&)."
+        ),
+        res
+      );
+    }
     if (pathError === "password") {
       return handleError(
         EmployeeError.invalidInfo("Senha do funcionário invalido."),

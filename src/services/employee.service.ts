@@ -40,7 +40,7 @@ export class EmployeeService {
     const codeValidation =
       await codeValidationToEmployeeService.getCodeByCharacters(validationCode);
 
-    if (!codeValidation) "codeNotFound";
+    if (!codeValidation) return "codeNotFound";
 
     const employee = await prismaService.prisma.employee.findFirst({
       where: {
