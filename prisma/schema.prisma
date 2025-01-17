@@ -20,12 +20,12 @@ model Client {
 }
 
 model Employee {
-  id              Int            @id @default(autoincrement())
+  id              Int           @id @default(autoincrement())
   username        String
   password        String
   role            Role
-  email           String         @unique
-  hiredAt         DateTime       @default(now())
+  email           String        @unique
+  hiredAt         DateTime      @default(now())
   appointments    Appointment[]
   cellphone       String
   profile         Profile?
@@ -68,6 +68,12 @@ model Category {
   services    Service[]
   clients     Client[]
   products    Product[]
+}
+
+model CodeValidationToEmployee {
+  id          Int     @id @default(autoincrement())
+  caracter    String  @unique
+  description String?
 }
 
 model Service {
