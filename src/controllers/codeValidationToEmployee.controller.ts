@@ -6,7 +6,7 @@ import { TPathError } from "../@types";
 import { ZodError } from "zod";
 import { fromError } from "zod-validation-error";
 import { StatusCodes } from "http-status-codes";
-import { codeValidationSchema } from "../schemas";
+import { codeValidationSchema, findOneCodeValidationSchema } from "../schemas";
 import CodeValidationToEmployeeValidator from "../validators/codeValidationToEmployee";
 import { CodeValidationToEmplyeeError } from "../errors/codeValidationToEmployee";
 
@@ -27,6 +27,89 @@ export default class CodeValidationToEmployeeController {
         throw CodeValidationToEmplyeeError.codeAlreadyExists();
       }
       return res.status(StatusCodes.CREATED).json(codeValidationToEmployee);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromError(error);
+        const { details } = validationError;
+        const pathError = details[0].path[0] as TPathError;
+        codeValidationToEmployeeValidator.validator(pathError, res);
+      } else {
+        return handleError(error as BaseError, res);
+      }
+    }
+  }
+
+  async getOneCodeValidationToEmployee(req: Request, res: Response) {
+    try {
+      const { characters } = findOneCodeValidationSchema.parse(req.body);
+      const codeValidationToEmployee =
+        await codeValidationToEmployeeService.getCodeByCharacters(characters);
+      if (!codeValidationToEmployee) {
+        throw CodeValidationToEmplyeeError.codeDoesntExists();
+      }
+      return res.status(StatusCodes.OK).json(codeValidationToEmployee);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromError(error);
+        const { details } = validationError;
+        const pathError = details[0].path[0] as TPathError;
+        codeValidationToEmployeeValidator.validator(pathError, res);
+      } else {
+        return handleError(error as BaseError, res);
+      }
+    }
+  }
+
+  async getAllCodeValidationToEmployee(req: Request, res: Response) {
+    try {
+      const codeValidationToEmployee =
+        await codeValidationToEmployeeService.getAllCodes();
+      return res.status(StatusCodes.OK).json(codeValidationToEmployee);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromError(error);
+        const { details } = validationError;
+        const pathError = details[0].path[0] as TPathError;
+        codeValidationToEmployeeValidator.validator(pathError, res);
+      } else {
+        return handleError(error as BaseError, res);
+      }
+    }
+  }
+
+  async updateCodeValidationToEmployee(req: Request, res: Response) {
+    try {
+      const { characters, description } = codeValidationSchema.parse(req.body);
+      const codeValidationToEmployee =
+        await codeValidationToEmployeeService.updateCode({
+          characters,
+          description,
+        });
+      if (!codeValidationToEmployee) {
+        throw CodeValidationToEmplyeeError.codeDoesntExists();
+      }
+      return res.status(StatusCodes.OK).json(codeValidationToEmployee);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromError(error);
+        const { details } = validationError;
+        const pathError = details[0].path[0] as TPathError;
+        codeValidationToEmployeeValidator.validator(pathError, res);
+      } else {
+        return handleError(error as BaseError, res);
+      }
+    }
+  }
+
+  async deleteCodeValidationToEmployee(req: Request, res: Response) {
+    try {
+      const { characters } = findOneCodeValidationSchema.parse(req.body);
+      const codeValidationToEmployee =
+        await codeValidationToEmployeeService.deleteCode(characters);
+      if (!codeValidationToEmployee) {
+        throw CodeValidationToEmplyeeError.codeDoesntExists();
+      }
+      return res.status(StatusCodes.OK).json(codeValidationToEmployee);
     } catch (error) {
       if (error instanceof ZodError) {
         const validationError = fromError(error);

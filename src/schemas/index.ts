@@ -32,6 +32,10 @@ const codeValidationSchema = zod.object({
   description: zod.string().min(10),
 });
 
+const findOneCodeValidationSchema = codeValidationSchema.omit({
+  description: true,
+});
+
 const updateServiceSchema = createServiceSchema;
 
 const createClientSchema = createEmployeeSchema
@@ -95,9 +99,11 @@ export {
   loginSchema,
   envSchema,
   productSchema,
+  findOneCodeValidationSchema,
   createClientSchema,
   createCategorySchema,
   createServiceSchema,
+  codeValidationSchema,
   updateCategorySchema,
   updateServiceSchema,
 };
