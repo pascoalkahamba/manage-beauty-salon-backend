@@ -48,6 +48,12 @@ export interface CreateServiceI {
   photo: PictureI;
 }
 
+export interface UpdateCodeValidationToEmployeeI {
+  characters: string;
+  description: string;
+  id: number;
+}
+
 export interface UpdateServiceI extends CreateServiceI {
   id: number;
 }

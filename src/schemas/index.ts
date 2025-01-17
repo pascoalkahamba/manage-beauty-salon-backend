@@ -27,6 +27,11 @@ const createServiceSchema = zod.object({
   categoryId: zod.number(),
 });
 
+const codeValidationSchema = zod.object({
+  characters: zod.string().min(6),
+  description: zod.string().min(10),
+});
+
 const updateServiceSchema = createServiceSchema;
 
 const createClientSchema = createEmployeeSchema
