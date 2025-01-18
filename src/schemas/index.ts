@@ -34,9 +34,6 @@ const createAcademicLevelSchema = zod.object({
   name: zod.string().min(6),
   description: zod.string().min(10),
 });
-const updateAcademicLevelSchema = createAcademicLevelSchema.extend({
-  id: zod.number(),
-});
 
 const updateCategorySchema = createCategorySchema
   .omit({
@@ -122,7 +119,6 @@ export {
   createClientSchema,
   createCategorySchema,
   createAcademicLevelSchema,
-  updateAcademicLevelSchema,
   createServiceSchema,
   codeValidationSchema,
   updateCategorySchema,

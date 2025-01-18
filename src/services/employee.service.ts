@@ -12,14 +12,14 @@ const codeValidationToEmployeeService = new CodeValidationToEmployeeService();
 export class EmployeeService {
   async getAllEmployees() {
     const employees = await prismaService.prisma.employee.findMany({
-      select: DEFAULT_SELECT,
+      select: { ...DEFAULT_SELECT, id: true },
     });
     return employees;
   }
   async getEmployeeById(id: number) {
     const employee = await prismaService.prisma.employee.findFirst({
       where: { id },
-      select: DEFAULT_SELECT,
+      select: { ...DEFAULT_SELECT, services: true },
     });
     if (!employee) return;
     return employee;

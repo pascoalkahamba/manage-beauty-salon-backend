@@ -7,6 +7,7 @@ import { productRoutes } from "./routes/product.routes";
 import { serviceRoutes } from "./routes/service.routes";
 import { categoryRoutes } from "./routes/category.routes";
 import { codeValidationToEmployeeRoutes } from "./routes/codeValidationToEmployee.routes";
+import { academicLevelRoutes } from "./routes/academicLevel.routes";
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use("/client", clientRoutes);
 app.use("/product", productRoutes);
 app.use("/service", serviceRoutes);
 app.use("/category", categoryRoutes);
+app.use("/academicLevel", academicLevelRoutes);
 app.use("/codeValidationToEmployee", codeValidationToEmployeeRoutes);
 app.use(bodyParser.json());
 
