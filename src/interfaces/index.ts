@@ -76,3 +76,9 @@ export interface ClientUpdateI extends CreateClientI {
   bio: string;
   photo: PictureI;
 }
+
+export interface UpdateAcademicLevelI {
+  id: number;
+  name: string;
+  description: string;
+}

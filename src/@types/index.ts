@@ -3,6 +3,7 @@ import {
   Employee,
   Client,
   Service,
+  AcademicLevel,
   Category,
   CodeValidationToEmployee,
 } from "@prisma/client";
@@ -17,6 +18,7 @@ export type CodeValidationToEmployeeModel = Omit<
   DataBaseExtraValues
 >;
 export type ClientUpdateT = Omit<EmployeeUpdateI, "academicLevel">;
+export type AcademicLevelModel = Omit<AcademicLevel, DataBaseExtraValues>;
 export type EmployeeModel = Omit<Employee, DataBaseExtraValues>;
 export type ClientModel = Omit<Client, DataBaseExtraValues>;
 export type TJsonWebTokenError = "jwt malformed" | "jwt must be provided";
