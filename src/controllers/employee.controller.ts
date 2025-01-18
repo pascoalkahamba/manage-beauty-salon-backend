@@ -15,6 +15,8 @@ import {
 } from "../schemas";
 import EmployeeError from "../errors/employee.error";
 import { CodeValidationToEmplyeeError } from "../errors/codeValidationToEmployee";
+import { ServiceError } from "../errors/service.errors";
+import { AcademicLevelErrors } from "../errors/academicLevel.errors";
 
 const employeeService = new EmployeeService();
 const employeeValidator = new EmployeeValidator();
@@ -48,6 +50,13 @@ export default class EmployeeController {
 
       if (!employee) {
         throw EmployeeError.emailAlreadyExist();
+      }
+
+      if (employee === "servicesNotFound") {
+        return ServiceError.serviceNotFound();
+      }
+      if (employee === "academicLevelNotFound") {
+        return AcademicLevelErrors.academicLevelNotFound();
       }
 
       return res.status(StatusCodes.CREATED).json(employee);

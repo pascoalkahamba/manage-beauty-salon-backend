@@ -56,7 +56,7 @@ export default class ServiceService {
         id: categoryId,
       },
     });
-    if (!category) return;
+    if (!category) return "No category found";
 
     const newService = await prismaService.prisma.service.create({
       data: {
@@ -66,8 +66,8 @@ export default class ServiceService {
         description,
         picture: {
           create: {
-            url: photo.url,
-            name: photo.name,
+            url: photo.url ? photo.url : "",
+            name: photo.name ? photo.name : "",
           },
         },
         category: {
@@ -87,6 +87,19 @@ export default class ServiceService {
       where: {
         id,
       },
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        picture: true,
+        duration: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
     if (!service) return;
     const category = await prismaService.prisma.category.findFirst({
@@ -94,7 +107,7 @@ export default class ServiceService {
         id: categoryId,
       },
     });
-    if (!category) return;
+    if (!category) return "No category found";
 
     const updatedService = await prismaService.prisma.service.update({
       where: {
@@ -106,8 +119,8 @@ export default class ServiceService {
         duration,
         picture: {
           update: {
-            url: photo.url,
-            name: photo.name,
+            url: photo.url ? photo.url : service.picture?.url,
+            name: photo.name ? photo.name : service.picture?.name,
           },
         },
         description,
@@ -122,6 +135,9 @@ export default class ServiceService {
   }
 
   async deleteService(serviceId: number) {
+    const allServices = await this.getAllServices();
+
+    if (allServices.length === 1) return "Can't delete the last service";
     const service = await prismaService.prisma.service.findFirst({
       where: {
         id: serviceId,

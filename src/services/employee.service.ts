@@ -35,12 +35,6 @@ export class EmployeeService {
       cellphone,
       servicesIds,
     } = employeeInfo;
-    const hashPassword = await bcrypt.hash(password, 10);
-
-    const codeValidation =
-      await codeValidationToEmployeeService.getCodeByCharacters(validationCode);
-
-    if (!codeValidation) return "codeNotFound";
 
     const employee = await prismaService.prisma.employee.findFirst({
       where: {
@@ -48,12 +42,42 @@ export class EmployeeService {
       },
     });
 
+    if (employee) return;
+
+    const hashPassword = await bcrypt.hash(password, 10);
+
+    if (role === "MANAGER") {
+      const manager = await prismaService.prisma.employee.create({
+        data: {
+          email,
+          password: hashPassword,
+          username,
+          academicLevel: {
+            create: {
+              description: "Conta especifica para o gerente do salão de beleza",
+              name: "Licenciado em Administração de Empresas",
+            },
+          },
+          role,
+          cellphone,
+        },
+        select: DEFAULT_SELECT,
+      });
+
+      return manager;
+    }
+
+    const codeValidation =
+      await codeValidationToEmployeeService.getCodeByCharacters(validationCode);
+
+    if (!codeValidation) return "codeNotFound";
+
     const academicLevel = await prismaService.prisma.academicLevel.findFirst({
       where: {
         id: academicLevelId,
       },
     });
-    if (!academicLevel) return;
+    if (!academicLevel) return "academicLevelNotFound";
 
     const services = await prismaService.prisma.service.findMany({
       where: {
@@ -63,9 +87,7 @@ export class EmployeeService {
       },
     });
 
-    if (services.length === 0) return;
-
-    if (employee) return;
+    if (services.length === 0) return "servicesNotFound";
 
     const newEmployee = await prismaService.prisma.employee.create({
       data: {

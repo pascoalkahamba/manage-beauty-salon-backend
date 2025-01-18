@@ -13,14 +13,6 @@ const createEmployeeSchema = zod.object({
   role: zod.string() as zod.ZodType<RoleT>,
 });
 
-const createCategorySchema = zod.object({
-  name: zod.string().min(6),
-  description: zod.string().min(10),
-  servicesIds: zod.number().array(),
-});
-
-const updateCategorySchema = createCategorySchema;
-
 const createServiceSchema = zod.object({
   name: zod.string().min(6),
   description: zod.string().min(10),
@@ -28,9 +20,26 @@ const createServiceSchema = zod.object({
   duration: zod.number(),
   categoryId: zod.number(),
 });
+const createCategorySchema = zod.object({
+  name: zod.string().min(6),
+  description: zod.string().min(10),
+  services: createServiceSchema
+    .omit({
+      categoryId: true,
+    })
+    .array(),
+});
+
+const updateCategorySchema = createCategorySchema
+  .omit({
+    services: true,
+  })
+  .extend({
+    servicesIds: zod.number().array(),
+  });
 
 const codeValidationSchema = zod.object({
-  characters: zod.string().min(6),
+  characters: zod.string().regex(EMPLOYEE_CODE_REGEX),
   description: zod.string().min(10),
 });
 

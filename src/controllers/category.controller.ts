@@ -9,25 +9,38 @@ import { TPathError } from "../@types";
 import { createCategorySchema, updateCategorySchema } from "../schemas";
 import { CategoryError } from "../errors/category.errors";
 import { StatusCodes } from "http-status-codes";
+import { ServiceError } from "../errors/service.errors";
 
 const categoryService = new CategoryService();
 const categoryValidator = new CategoryValidator();
 export default class CategoryController {
   async addCategory(req: Request, res: Response) {
     try {
-      const { description, name, servicesIds } = createCategorySchema.parse(
+      const { description, name, services } = createCategorySchema.parse(
         req.body
       );
 
       const category = await categoryService.addCategory({
         description,
         name,
-        servicesIds,
+        services: services.map((service) => {
+          return {
+            name: service.name,
+            description: service.description,
+            price: service.price,
+            duration: service.duration,
+            photo: {
+              name: req.fileName ?? "",
+              url: req.fileUrl ?? "",
+            },
+          };
+        }),
       });
 
       if (!category) {
         throw CategoryError.categoryAlreadyExists();
       }
+
       return res.status(StatusCodes.CREATED).json(category);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -92,6 +105,10 @@ export default class CategoryController {
       if (!category) {
         throw CategoryError.categoryNotFound();
       }
+
+      if (category === "No services found") {
+        throw ServiceError.serviceNotFound();
+      }
       return res.status(StatusCodes.OK).json(category);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -109,6 +126,13 @@ export default class CategoryController {
     try {
       const categoryId = req.params.categoryId as unknown as number;
       const categoryDeleted = await categoryService.deleteCategory(+categoryId);
+
+      if (categoryDeleted === "Can't delete the last category") {
+        throw CategoryError.invalidCategoryInfo(
+          "Não podess eliminar a última categoria"
+        );
+      }
+
       if (!categoryDeleted) {
         throw CategoryError.categoryNotFound();
       }

@@ -9,6 +9,7 @@ import { TPathError } from "../@types";
 import { createServiceSchema } from "../schemas";
 import { ServiceError } from "../errors/service.errors";
 import { StatusCodes } from "http-status-codes";
+import { CategoryError } from "../errors/category.errors";
 
 const serviceService = new ServiceService();
 const serviceValidator = new ServiceValidator();
@@ -33,6 +34,10 @@ export default class ServiceController {
       if (!service) {
         throw ServiceError.serviceAlreadyExists();
       }
+      if (service === "No category found") {
+        throw CategoryError.categoryNotFound();
+      }
+
       return res.status(StatusCodes.CREATED).json(service);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -102,6 +107,11 @@ export default class ServiceController {
       if (!service) {
         throw ServiceError.serviceNotFound();
       }
+
+      if (service === "No category found") {
+        throw CategoryError.categoryNotFound();
+      }
+
       return res.status(StatusCodes.OK).json(service);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -119,6 +129,12 @@ export default class ServiceController {
     try {
       const serviceId = req.params.serviceId as unknown as number;
       const service = await serviceService.deleteService(+serviceId);
+
+      if (service === "Can't delete the last service") {
+        throw ServiceError.invalidServiceInfo(
+          "Não podes deletar o último serviço"
+        );
+      }
       if (!service) {
         throw ServiceError.serviceNotFound();
       }

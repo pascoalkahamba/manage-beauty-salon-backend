@@ -8,7 +8,7 @@ export default class CodeValidationToEmployeeValidator {
     if (pathError === "characters") {
       return handleError(
         CodeValidationToEmplyeeError.invalidCodeInfo(
-          "Caracteres do codigo inválido"
+          "Caracteres do codigo inválido, deve conter 8 digitos um numero e uma letra e um caracter especial (@$!%*#?&)."
         ),
         res
       );

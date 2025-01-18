@@ -61,11 +61,14 @@ export interface UpdateServiceI extends CreateServiceI {
 export interface CreateCategoryI {
   name: string;
   description?: string;
-  servicesIds: number[];
+  services: Omit<CreateServiceI, "categoryId">[];
 }
 
-export interface UpdateCategoryI extends CreateCategoryI {
+export interface UpdateCategoryI {
   id: number;
+  name: string;
+  description?: string;
+  servicesIds: number[];
 }
 
 export interface ClientUpdateI extends CreateClientI {

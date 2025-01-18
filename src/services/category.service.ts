@@ -1,4 +1,3 @@
-import { CategoryModel } from "../@types";
 import { CreateCategoryI, UpdateCategoryI } from "../interfaces";
 import { prismaService } from "./prisma.service";
 
@@ -18,7 +17,7 @@ export default class CategoryService {
   }
 
   async addCategory(categoryInfo: CreateCategoryI) {
-    const { name, description, servicesIds } = categoryInfo;
+    const { name, description, services } = categoryInfo;
     const category = await prismaService.prisma.category.findFirst({
       where: {
         name,
@@ -26,22 +25,30 @@ export default class CategoryService {
     });
     if (category) return;
 
-    const services = await prismaService.prisma.service.findMany({
-      where: {
-        id: {
-          in: servicesIds,
-        },
-      },
-    });
-    if (services.length === 0) return;
-
     const newCategory = await prismaService.prisma.category.create({
       data: {
         name,
         description,
         services: {
-          connect: servicesIds.map((id) => ({ id })),
+          create: services.map((service) => ({
+            name: service.name,
+            price: service.price,
+            duration: service.duration,
+            description: service.description,
+            picture: {
+              create: {
+                url: service.photo.url ? service.photo.url : "",
+                name: service.photo.name ? service.photo.name : "",
+              },
+            },
+          })),
         },
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        services: true,
       },
     });
     return newCategory;
@@ -62,7 +69,7 @@ export default class CategoryService {
         },
       },
     });
-    if (services.length === 0) return;
+    if (services.length === 0) return "No services found";
 
     const updatedCategory = await prismaService.prisma.category.update({
       where: {
@@ -80,6 +87,9 @@ export default class CategoryService {
   }
 
   async deleteCategory(categoryId: number) {
+    const allCategories = await this.getAllCategories();
+
+    if (allCategories.length === 1) return "Can't delete the last category";
     const category = await prismaService.prisma.category.findFirst({
       where: { id: categoryId },
     });
