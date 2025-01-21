@@ -54,16 +54,13 @@ const findOneCodeValidationSchema = codeValidationSchema.omit({
 
 const updateServiceSchema = createServiceSchema;
 
-const createClientSchema = createEmployeeSchema
-  .omit({
-    role: true,
-    academicLevelId: true,
-    servicesIds: true,
-  })
-  .extend({
-    categoriesIds: zod.number().array(),
-  });
-
+const createClientSchema = zod.object({
+  password: zod.string().min(6),
+  username: zod.string().min(6),
+  email: zod.string().email(),
+  cellphone: zod.string().min(9).max(9),
+  categoriesIds: zod.number().array(),
+});
 const loginSchema = zod.object({
   email: zod.string().email(),
   password: zod.string().min(6),

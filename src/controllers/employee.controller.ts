@@ -53,10 +53,10 @@ export default class EmployeeController {
       }
 
       if (employee === "servicesNotFound") {
-        return ServiceError.serviceNotFound();
+        throw ServiceError.serviceNotFound();
       }
       if (employee === "academicLevelNotFound") {
-        return AcademicLevelErrors.academicLevelNotFound();
+        throw AcademicLevelErrors.academicLevelNotFound();
       }
 
       return res.status(StatusCodes.CREATED).json(employee);

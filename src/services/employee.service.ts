@@ -58,6 +58,17 @@ export class EmployeeService {
               name: "Licenciado em Administração de Empresas",
             },
           },
+          profile: {
+            create: {
+              bio: "Fale um pouco sobre você senhor(a) gerente",
+              photo: {
+                create: {
+                  url: "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-1.png",
+                  name: "Default_Name_Of_Photo",
+                },
+              },
+            },
+          },
           role,
           cellphone,
         },
