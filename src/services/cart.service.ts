@@ -1,10 +1,35 @@
-import { CartModel } from "../@types";
 import { AddCartI, UpdateCartI } from "../interfaces";
 import { prismaService } from "./prisma.service";
 
 export default class CartService {
   async addCart(cartInfo: AddCartI) {
     const { clientId, appointmentId } = cartInfo;
+
+    const clientCartAppointments = await prismaService.prisma.cart.findFirst({
+      where: {
+        clientId,
+      },
+      select: {
+        appointment: true,
+      },
+    });
+
+    const clientAppointments = clientCartAppointments?.appointment.some(
+      (appointment) => appointment.id === appointmentId
+    );
+    if (clientAppointments) return "Appointment already in cart";
+
+    const appointment = await prismaService.prisma.appointment.findFirst({
+      where: {
+        id: appointmentId,
+      },
+      select: {
+        clientId: true,
+        id: true,
+      },
+    });
+    if (!appointment) return;
+    if (appointment.clientId !== clientId) return;
     const newCart = await prismaService.prisma.cart.create({
       data: {
         client: {
@@ -87,6 +112,19 @@ export default class CartService {
       },
     });
     if (!cart) return;
+
+    const appointment = await prismaService.prisma.appointment.findFirst({
+      where: {
+        id: appointmentId,
+      },
+      select: {
+        clientId: true,
+        id: true,
+      },
+    });
+    if (!appointment) return;
+    if (appointment.clientId !== clientId) return "You can't update this cart";
+
     const updatedCart = await prismaService.prisma.cart.update({
       where: {
         id,

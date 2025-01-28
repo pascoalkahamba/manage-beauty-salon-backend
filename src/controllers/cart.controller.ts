@@ -20,6 +20,13 @@ export default class CartController {
         clientId: +clientId,
         appointmentId: +appointmentId,
       });
+      if (!cart)
+        throw CartErrors.invalidCartInfo(
+          "Agendamento não criado pelo cliente."
+        );
+
+      if (cart === "Appointment already in cart")
+        throw CartErrors.invalidCartInfo("Agendamento já está no carrinho.");
       return res.status(StatusCodes.CREATED).json(cart);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -95,6 +102,11 @@ export default class CartController {
         appointmentId: +appointmentId,
       });
       if (!cart) throw CartErrors.cartNotFound();
+      if (cart === "You can't update this cart")
+        throw CartErrors.invalidCartInfo(
+          "Agendamento não criado pelo cliente."
+        );
+
       return res.status(StatusCodes.ACCEPTED).json(cart);
     } catch (error) {
       if (error instanceof ZodError) {
