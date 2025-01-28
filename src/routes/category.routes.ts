@@ -9,12 +9,7 @@ const categoryRoutes = express.Router();
 
 categoryRoutes.get("/getAllCategories", categoryController.getAllCategories);
 categoryRoutes.use(authMiddleware);
-categoryRoutes.post(
-  "/create",
-  upload.single("file"),
-  uploadFileMiddleware,
-  categoryController.addCategory
-);
+categoryRoutes.post("/create", categoryController.addCategory);
 categoryRoutes.get(
   "/getOneCategory/:categoryId",
   categoryController.getOneCategory
