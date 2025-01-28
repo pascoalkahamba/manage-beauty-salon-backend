@@ -21,6 +21,17 @@ export interface UpdateAppointmentI extends AppointmentModel {
   id: number;
 }
 
+export interface AddCartI {
+  clientId: number;
+  appointmentId: number;
+}
+
+export interface UpdateCartI {
+  id: number;
+  appointmentId: number;
+  clientId: number;
+}
+
 export interface LoginI {
   email: string;
   password: string;

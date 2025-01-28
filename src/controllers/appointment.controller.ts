@@ -9,7 +9,6 @@ import { TPathError } from "../@types";
 import { BaseError } from "../errors/baseError";
 import { appointmentSchema } from "../schemas";
 import { StatusCodes } from "http-status-codes";
-import { deleteApp } from "firebase/app";
 
 const appointmentService = new AppointmentService();
 const appointmentValidator = new AppointmentValidator();
@@ -21,13 +20,13 @@ export default class AppointmentController {
         appointmentSchema.parse(req.body);
 
       const appointment = await appointmentService.addAppointment({
-        clientId,
+        clientId: +clientId,
         date,
-        employeeId,
+        employeeId: +employeeId,
         cartId: null,
         status,
         hour,
-        serviceId,
+        serviceId: +serviceId,
       });
 
       return res.status(StatusCodes.CREATED).json(appointment);

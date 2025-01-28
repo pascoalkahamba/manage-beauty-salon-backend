@@ -35,7 +35,7 @@ const appointmentSchema = zod.object({
   employeeId: zod.number(),
   clientId: zod.number(),
   status: zod.string() as zod.ZodType<TStatus>,
-  date: zod.date(),
+  date: zod.string() as unknown as zod.ZodType<Date>,
   hour: zod.string(),
 });
 
