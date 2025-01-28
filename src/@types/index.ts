@@ -35,6 +35,8 @@ export type TPathError =
   | "validationCode"
   | "contact"
   | "username"
+  | "clientId"
+  | "appointmentId"
   | "role"
   | "date"
   | "hour"

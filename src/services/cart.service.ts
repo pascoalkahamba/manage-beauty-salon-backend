@@ -106,19 +106,4 @@ export default class CartService {
     });
     return updatedCart;
   }
-
-  async deleteAppointmentFromCart(cartId: number) {
-    const cart = await prismaService.prisma.cart.findFirst({
-      where: {
-        id: cartId,
-      },
-    });
-    if (!cart) return;
-    await prismaService.prisma.cart.delete({
-      where: {
-        id: cartId,
-      },
-    });
-    return cart;
-  }
 }

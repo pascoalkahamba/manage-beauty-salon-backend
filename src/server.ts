@@ -9,6 +9,7 @@ import { categoryRoutes } from "./routes/category.routes";
 import { codeValidationToEmployeeRoutes } from "./routes/codeValidationToEmployee.routes";
 import { academicLevelRoutes } from "./routes/academicLevel.routes";
 import { appointmentRoutes } from "./routes/appointment.routes";
+import { cartRoutes } from "./routes/cart.routes";
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use("/client", clientRoutes);
 app.use("/product", productRoutes);
 app.use("/service", serviceRoutes);
 app.use("/category", categoryRoutes);
+app.use("/cart", cartRoutes);
 app.use("/appointment", appointmentRoutes);
 app.use("/academicLevel", academicLevelRoutes);
 app.use("/codeValidationToEmployee", codeValidationToEmployeeRoutes);
