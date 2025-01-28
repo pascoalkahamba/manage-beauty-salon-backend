@@ -7,6 +7,7 @@ import { uploadFileMiddleware } from "../middlewares/uploadFileMiddleware";
 const serviceController = new ServiceController();
 const serviceRoutes = express.Router();
 
+serviceRoutes.get("/getAllServices", serviceController.getAllServices);
 serviceRoutes.use(authMiddleware);
 serviceRoutes.post(
   "/create",
@@ -15,7 +16,6 @@ serviceRoutes.post(
   serviceController.addService
 );
 serviceRoutes.get("/getOneService/:serviceId", serviceController.getOneService);
-serviceRoutes.get("/getAllServices", serviceController.getAllServices);
 serviceRoutes.post(
   "/update/:serviceId",
   upload.single("file"),

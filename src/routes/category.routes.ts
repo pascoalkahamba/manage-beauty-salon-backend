@@ -7,6 +7,7 @@ import { uploadFileMiddleware } from "../middlewares/uploadFileMiddleware";
 const categoryController = new CategoryController();
 const categoryRoutes = express.Router();
 
+categoryRoutes.get("/getAllCategories", categoryController.getAllCategories);
 categoryRoutes.use(authMiddleware);
 categoryRoutes.post(
   "/create",
@@ -18,7 +19,6 @@ categoryRoutes.get(
   "/getOneCategory/:categoryId",
   categoryController.getOneCategory
 );
-categoryRoutes.get("/getAllCategories", categoryController.getAllCategories);
 categoryRoutes.post("/update/:categoryId", categoryController.updateCategory);
 categoryRoutes.delete("/delete/:categoryId", categoryController.deleteCategory);
 

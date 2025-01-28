@@ -1,5 +1,5 @@
 import { z as zod } from "zod";
-import { RoleT } from "../@types";
+import { RoleT, TStatus } from "../@types";
 import { EMPLOYEE_CODE_REGEX } from "../utils";
 
 const createEmployeeSchema = zod.object({
@@ -28,6 +28,15 @@ const createCategorySchema = zod.object({
       categoryId: true,
     })
     .array(),
+});
+
+const appointmentSchema = zod.object({
+  serviceId: zod.number(),
+  employeeId: zod.number(),
+  clientId: zod.number(),
+  status: zod.string() as zod.ZodType<TStatus>,
+  date: zod.date(),
+  hour: zod.string(),
 });
 
 const createAcademicLevelSchema = zod.object({
@@ -116,6 +125,7 @@ export {
   createClientSchema,
   createCategorySchema,
   createAcademicLevelSchema,
+  appointmentSchema,
   createServiceSchema,
   codeValidationSchema,
   updateCategorySchema,

@@ -80,7 +80,7 @@ export class ClientService {
 
     if (isvalid) {
       const { password, ...newUser } = client;
-      return newUser;
+      return { ...newUser, role: "CLIENT" };
     }
     return;
   }

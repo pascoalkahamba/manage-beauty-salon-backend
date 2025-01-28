@@ -3,7 +3,14 @@ import { prismaService } from "./prisma.service";
 
 export default class CategoryService {
   async getAllCategories() {
-    const categories = await prismaService.prisma.category.findMany();
+    const categories = await prismaService.prisma.category.findMany({
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        services: true,
+      },
+    });
 
     return categories;
   }

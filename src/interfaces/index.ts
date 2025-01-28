@@ -1,4 +1,4 @@
-import { RoleT } from "../@types";
+import { AppointmentModel, RoleT } from "../@types";
 
 export interface EmployeeUpdateI {
   id: number;
@@ -15,6 +15,10 @@ export interface EmployeeUpdateI {
 export interface PictureI {
   url: string;
   name: string;
+}
+
+export interface UpdateAppointmentI extends AppointmentModel {
+  id: number;
 }
 
 export interface LoginI {

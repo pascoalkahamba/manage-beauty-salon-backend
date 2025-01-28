@@ -6,12 +6,15 @@ import {
   AcademicLevel,
   Category,
   CodeValidationToEmployee,
+  Appointment,
 } from "@prisma/client";
 import { EmployeeUpdateI } from "../interfaces";
 
 export type DataBaseExtraValues = "createdAt" | "updatedAt" | "id" | "hiredAt";
 export type RoleT = "MANAGER" | "EMPLOYEE";
+export type TStatus = "PENDING" | "CONFIRMED" | "CANCELED";
 export type ServiceModel = Omit<Service, DataBaseExtraValues>;
+export type AppointmentModel = Omit<Appointment, DataBaseExtraValues>;
 export type CategoryModel = Omit<Category, DataBaseExtraValues>;
 export type CodeValidationToEmployeeModel = Omit<
   CodeValidationToEmployee,
@@ -31,6 +34,8 @@ export type TPathError =
   | "contact"
   | "username"
   | "role"
+  | "date"
+  | "hour"
   | "description"
   | "academicLevelId"
   | "categoriesIds"

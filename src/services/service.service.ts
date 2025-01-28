@@ -10,10 +10,20 @@ export default class ServiceService {
         name: true,
         price: true,
         duration: true,
+        description: true,
+        picture: {
+          select: {
+            url: true,
+            name: true,
+            serviceId: true,
+          },
+        },
+        categoryId: true,
         category: {
           select: {
             id: true,
             name: true,
+            description: true,
           },
         },
       },
