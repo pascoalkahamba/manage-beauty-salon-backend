@@ -1,7 +1,7 @@
 import { deleteApp } from "firebase/app";
 import { AppointmentModel } from "../@types";
 import { prismaService } from "./prisma.service";
-import { UpdateAppointmentI } from "../interfaces";
+import { UpdateAppointmentI, UpdateStatusAppointmentI } from "../interfaces";
 
 export default class AppointmentService {
   async addAppointment(appointmentInfo: AppointmentModel) {
@@ -94,6 +94,19 @@ export default class AppointmentService {
     });
     if (!appointment) return;
     return appointment;
+  }
+
+  async updateStatusAppointment(appointmentInfo: UpdateStatusAppointmentI) {
+    const { status, id, reason } = appointmentInfo;
+    const appointment = await prismaService.prisma.appointment.findFirst({
+      where: { id },
+    });
+    if (!appointment) return;
+    const updatedAppointment = await prismaService.prisma.appointment.update({
+      where: { id },
+      data: { status, reason },
+    });
+    return updatedAppointment;
   }
 
   async updateAppointment(appointmentInfo: UpdateAppointmentI) {

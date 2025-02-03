@@ -19,7 +19,40 @@ export class EmployeeService {
   async getEmployeeById(id: number) {
     const employee = await prismaService.prisma.employee.findFirst({
       where: { id },
-      select: { ...DEFAULT_SELECT, services: true },
+      select: {
+        ...DEFAULT_SELECT,
+        services: true,
+        appointments: {
+          select: {
+            id: true,
+            date: true,
+            client: {
+              select: { username: true, email: true },
+            },
+            employee: {
+              select: { username: true, email: true },
+            },
+            service: true,
+            status: true,
+            hour: true,
+            clientId: true,
+            employeeId: true,
+            serviceId: true,
+          },
+        },
+        academicLevel: true,
+        cellphone: true,
+        availability: true,
+        profile: {
+          select: {
+            photo: true,
+            bio: true,
+            id: true,
+            clientId: true,
+            employeeId: true,
+          },
+        },
+      },
     });
     if (!employee) return;
     return employee;

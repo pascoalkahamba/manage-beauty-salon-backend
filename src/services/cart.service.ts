@@ -5,19 +5,15 @@ export default class CartService {
   async addCart(cartInfo: AddCartI) {
     const { clientId, appointmentId } = cartInfo;
 
-    const clientCartAppointments = await prismaService.prisma.cart.findFirst({
+    const existingCart = await prismaService.prisma.cart.findFirst({
       where: {
         clientId,
       },
       select: {
         appointment: true,
+        id: true,
       },
     });
-
-    const clientAppointments = clientCartAppointments?.appointment.some(
-      (appointment) => appointment.id === appointmentId
-    );
-    if (clientAppointments) return "Appointment already in cart";
 
     const appointment = await prismaService.prisma.appointment.findFirst({
       where: {
@@ -28,9 +24,36 @@ export default class CartService {
         id: true,
       },
     });
-    if (!appointment) return;
-    if (appointment.clientId !== clientId) return;
-    const newCart = await prismaService.prisma.cart.create({
+
+    const clientAppointments = existingCart?.appointment.some(
+      (appointment) => appointment.id === appointmentId
+    );
+    if (clientAppointments) return "Appointment already in cart";
+
+    if (!appointment || appointment.clientId !== clientId) return;
+
+    if (existingCart) {
+      // User already has a cart, just connect the new appointment
+      return await prismaService.prisma.cart.update({
+        where: {
+          id: existingCart.id,
+        },
+        data: {
+          appointment: {
+            connect: {
+              id: appointmentId,
+            },
+          },
+        },
+        select: {
+          clientId: true,
+          appointment: true,
+        },
+      });
+    }
+
+    // Create new cart for first-time users
+    return await prismaService.prisma.cart.create({
       data: {
         client: {
           connect: {
@@ -48,7 +71,6 @@ export default class CartService {
         appointment: true,
       },
     });
-    return newCart;
   }
 
   async getCartByClientId(clientId: number) {

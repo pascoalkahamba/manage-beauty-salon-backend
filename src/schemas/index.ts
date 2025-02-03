@@ -30,6 +30,11 @@ const createCategorySchema = zod.object({
     .array(),
 });
 
+const updateStatusAppointmentSchema = zod.object({
+  status: zod.string() as zod.ZodType<TStatus>,
+  reason: zod.string().min(10).optional(),
+});
+
 const appointmentSchema = zod.object({
   serviceId: zod.number(),
   employeeId: zod.number(),
@@ -129,5 +134,6 @@ export {
   createServiceSchema,
   codeValidationSchema,
   updateCategorySchema,
+  updateStatusAppointmentSchema,
   updateServiceSchema,
 };

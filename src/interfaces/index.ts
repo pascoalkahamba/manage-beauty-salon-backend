@@ -1,4 +1,4 @@
-import { AppointmentModel, RoleT } from "../@types";
+import { AppointmentModel, RoleT, TStatus } from "../@types";
 
 export interface EmployeeUpdateI {
   id: number;
@@ -35,6 +35,12 @@ export interface UpdateCartI {
 export interface LoginI {
   email: string;
   password: string;
+}
+
+export interface UpdateStatusAppointmentI {
+  id: number;
+  status: TStatus;
+  reason?: string;
 }
 
 export interface CreateEmployeeI {

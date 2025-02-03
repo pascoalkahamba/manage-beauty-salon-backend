@@ -18,7 +18,28 @@ export class ClientService {
   async getClientById(id: number) {
     const client = await prismaService.prisma.client.findFirst({
       where: { id },
-      select: DEFAULT_SELECT,
+      select: {
+        ...DEFAULT_SELECT,
+        categories: true,
+        cart: {
+          select: {
+            appointment: true,
+            id: true,
+            clientId: true,
+          },
+        },
+        appointments: true,
+        cellphone: true,
+        profile: {
+          select: {
+            photo: true,
+            bio: true,
+            id: true,
+            clientId: true,
+            employeeId: true,
+          },
+        },
+      },
     });
     if (!client) return;
     return client;

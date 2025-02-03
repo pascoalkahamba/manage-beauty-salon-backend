@@ -24,6 +24,7 @@ model Employee {
   id              Int           @id @default(autoincrement())
   username        String
   password        String
+  availability    String?
   role            Role
   email           String        @unique
   hiredAt         DateTime      @default(now())
@@ -97,14 +98,15 @@ model Appointment {
   employeeId Int
   serviceId  Int
   date       DateTime
+  reason     String?
   hour       String
   status     Status   @default(PENDING)
   cart       Cart?    @relation(fields: [cartId], references: [id])
   cartId     Int?
-  client   Client   @relation(fields: [clientId], references: [id])
-  employee Employee @relation(fields: [employeeId], references: [id])
-  service  Service  @relation(fields: [serviceId], references: [id])
-  payment  Payment?
+  client     Client   @relation(fields: [clientId], references: [id])
+  employee   Employee @relation(fields: [employeeId], references: [id])
+  service    Service  @relation(fields: [serviceId], references: [id])
+  payment    Payment?
 }
 
 model Cart {

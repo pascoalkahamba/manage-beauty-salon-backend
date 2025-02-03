@@ -11,11 +11,11 @@ export default class ServiceService {
         price: true,
         duration: true,
         description: true,
+        employees: true,
         picture: {
           select: {
             url: true,
             name: true,
-            serviceId: true,
           },
         },
         categoryId: true,
@@ -39,6 +39,14 @@ export default class ServiceService {
         name: true,
         price: true,
         duration: true,
+        employees: true,
+        description: true,
+        picture: {
+          select: {
+            url: true,
+            name: true,
+          },
+        },
         category: {
           select: {
             id: true,
@@ -103,6 +111,7 @@ export default class ServiceService {
         price: true,
         picture: true,
         duration: true,
+        employees: true,
         category: {
           select: {
             id: true,

@@ -7,7 +7,7 @@ import { ZodError } from "zod";
 import { fromError } from "zod-validation-error";
 import { TPathError } from "../@types";
 import { BaseError } from "../errors/baseError";
-import { appointmentSchema } from "../schemas";
+import { appointmentSchema, updateStatusAppointmentSchema } from "../schemas";
 import { StatusCodes } from "http-status-codes";
 
 const appointmentService = new AppointmentService();
@@ -23,12 +23,12 @@ export default class AppointmentController {
         clientId: +clientId,
         date,
         employeeId: +employeeId,
+        reason: null,
         cartId: null,
         status,
         hour,
         serviceId: +serviceId,
       });
-
       return res.status(StatusCodes.CREATED).json(appointment);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -81,6 +81,32 @@ export default class AppointmentController {
     }
   }
 
+  async updateStatusAppointment(req: Request, res: Response) {
+    try {
+      const { appointmentId } = req.params as unknown as {
+        appointmentId: number;
+      };
+
+      const { status, reason } = updateStatusAppointmentSchema.parse(req.body);
+      const appointment = await appointmentService.updateStatusAppointment({
+        id: +appointmentId,
+        reason,
+        status,
+      });
+      if (!appointment) throw AppointmentErrors.appointmentNotFound();
+      return res.status(StatusCodes.ACCEPTED).json(appointment);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromError(error);
+        const { details } = validationError;
+        const pathError = details[0].path[0] as TPathError;
+        appointmentValidator.validator(pathError, res);
+      } else {
+        return handleError(error as BaseError, res);
+      }
+    }
+  }
+
   async updateAppointment(req: Request, res: Response) {
     try {
       const { appointmentId } = req.params as unknown as {
@@ -92,6 +118,7 @@ export default class AppointmentController {
         id: +appointmentId,
         clientId,
         date,
+        reason: null,
         employeeId,
         hour,
         serviceId,

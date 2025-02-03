@@ -11,6 +11,20 @@ export class AppointmentValidator {
         res
       );
     }
+    if (pathError === "reason") {
+      return handleError(
+        AppointmentErrors.invalidAppointmentInfo(
+          "Motivo tem que ter no minimo 10 caracteres."
+        ),
+        res
+      );
+    }
+    if (pathError === "status") {
+      return handleError(
+        AppointmentErrors.invalidAppointmentInfo("Status inválido."),
+        res
+      );
+    }
     if (pathError === "hour") {
       return handleError(
         AppointmentErrors.invalidAppointmentInfo("Horário inválido."),

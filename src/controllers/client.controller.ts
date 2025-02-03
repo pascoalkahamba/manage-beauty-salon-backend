@@ -91,7 +91,7 @@ export default class ClientController {
         throw ClientErrors.clientNotFound();
       }
 
-      return res.status(StatusCodes.OK).json(client);
+      return res.status(StatusCodes.OK).json({ ...client, role: "CLIENT" });
     } catch (error) {
       if (error instanceof ZodError) {
         const validationError = fromError(error);
