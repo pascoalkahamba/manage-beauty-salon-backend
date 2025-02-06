@@ -180,6 +180,18 @@ export class EmployeeService {
     const hashPassword = await bcrypt.hash(password, 10);
     const employee = await prismaService.prisma.employee.findFirst({
       where: { id },
+      select: {
+        profile: {
+          select: {
+            photo: {
+              select: {
+                url: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!employee) return;
@@ -199,6 +211,7 @@ export class EmployeeService {
       },
     });
     if (services.length === 0) return;
+    console.log("employee", employee);
 
     const employeeWithEmail = await prismaService.prisma.employee.findFirst({
       where: {
@@ -228,8 +241,8 @@ export class EmployeeService {
             bio,
             photo: {
               update: {
-                url: photo.url,
-                name: photo.name,
+                url: !photo.url ? employee?.profile?.photo?.url : photo.url,
+                name: !photo.name ? employee?.profile?.photo?.name : photo.name,
               },
             },
           },

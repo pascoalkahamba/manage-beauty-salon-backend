@@ -28,7 +28,33 @@ export class ClientService {
             clientId: true,
           },
         },
-        appointments: true,
+        appointments: {
+          select: {
+            id: true,
+            date: true,
+            hour: true,
+            status: true,
+            service: true,
+            client: {
+              select: {
+                username: true,
+                email: true,
+                cellphone: true,
+                id: true,
+              },
+            },
+            employee: {
+              select: {
+                username: true,
+                email: true,
+                cellphone: true,
+                id: true,
+                role: true,
+              },
+            },
+          },
+        },
+
         cellphone: true,
         profile: {
           select: {
@@ -137,6 +163,18 @@ export class ClientService {
 
     const client = await prismaService.prisma.client.findFirst({
       where: { id },
+      select: {
+        profile: {
+          select: {
+            photo: {
+              select: {
+                url: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!client) return;
@@ -149,6 +187,12 @@ export class ClientService {
       },
     });
     if (categories.length === 0) return;
+
+    const clientWithEmail = await prismaService.prisma.client.findFirst({
+      where: { email },
+    });
+    if (clientWithEmail && clientWithEmail.id !== id)
+      return "emailAlreadyExists";
 
     const updatedClient = await prismaService.prisma.client.update({
       where: { id },
@@ -165,8 +209,8 @@ export class ClientService {
             bio,
             photo: {
               update: {
-                url: photo.url,
-                name: photo.name,
+                url: !photo.url ? client?.profile?.photo?.url : photo.url,
+                name: !photo.name ? client?.profile?.photo?.name : photo.name,
               },
             },
           },

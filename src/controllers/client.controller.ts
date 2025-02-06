@@ -158,6 +158,10 @@ export default class ClientController {
       if (!client) {
         throw ClientErrors.clientNotFound();
       }
+
+      if (client === "emailAlreadyExists") {
+        throw ClientErrors.clientEmailExists();
+      }
       return res.status(StatusCodes.OK).json(client);
     } catch (error) {
       if (error instanceof ZodError) {

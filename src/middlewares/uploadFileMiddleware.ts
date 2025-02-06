@@ -61,6 +61,6 @@ export const uploadFileMiddleware = async (
         .json({ message: "Erro ao fazer upload do arquivo", error });
     }
 
-    return res.status(500).json({ message: "Erro no servidor", error });
+    next();
   }
 };
