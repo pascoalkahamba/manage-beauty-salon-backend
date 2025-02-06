@@ -27,10 +27,10 @@ export class EmployeeService {
             id: true,
             date: true,
             client: {
-              select: { username: true, email: true },
+              select: { username: true, email: true, cellphone: true },
             },
             employee: {
-              select: { username: true, email: true },
+              select: { username: true, email: true, cellphone: true },
             },
             service: true,
             status: true,
@@ -199,6 +199,14 @@ export class EmployeeService {
       },
     });
     if (services.length === 0) return;
+
+    const employeeWithEmail = await prismaService.prisma.employee.findFirst({
+      where: {
+        email,
+      },
+    });
+    if (employeeWithEmail && employeeWithEmail.id !== id)
+      return "emailAlreadyExists";
 
     const updatedEmployee = await prismaService.prisma.employee.update({
       where: { id },

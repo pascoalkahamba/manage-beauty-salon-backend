@@ -1,13 +1,25 @@
 import multer, { FileFilterCallback } from "multer";
 
-const storage = multer.memoryStorage(); // Armazena o arquivo na memória
+const storage = multer.memoryStorage();
+
+const isBase64Image = (data: string) => {
+  const base64Regex = /^data:image\/(png|jpg|jpeg|gif);base64,/;
+  return base64Regex.test(data);
+};
 
 const upload = multer({
   storage,
   limits: {
-    fileSize: 5 * 1024 * 1024, // Limite de 10MB
+    fileSize: 10 * 1024 * 1024, // Increased to 10MB
   },
   fileFilter: (req, file, cb: FileFilterCallback) => {
+    // Handle base64 images
+    if (req.body?.photo && isBase64Image(req.body.photo)) {
+      cb(null, true);
+      return;
+    }
+
+    // Handle regular file uploads
     if (
       file.mimetype.startsWith("image/") ||
       file.mimetype === "application/pdf" ||
@@ -16,13 +28,14 @@ const upload = multer({
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     ) {
       cb(null, true);
-    } else {
-      cb(
-        new Error(
-          "Invalid file type! Please upload an image or a document (PDF, DOC, DOCX)."
-        )
-      );
+      return;
     }
+
+    cb(
+      new Error(
+        "Invalid file type! Please upload an image or a document (PDF, DOC, DOCX)."
+      )
+    );
   },
 });
 

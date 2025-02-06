@@ -16,7 +16,7 @@ appointmentRoutes.get(
   appointmentController.getOneAppointment
 );
 appointmentRoutes.post(
-  "/updateStatusAppointment/:appointmentId",
+  "/updateStatus/:appointmentId",
   appointmentController.updateStatusAppointment
 );
 appointmentRoutes.post(

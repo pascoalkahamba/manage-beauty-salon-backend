@@ -8,7 +8,7 @@ const createEmployeeSchema = zod.object({
   email: zod.string().email(),
   validationCode: zod.string().regex(EMPLOYEE_CODE_REGEX),
   servicesIds: zod.number().array(),
-  academicLevelId: zod.number(),
+  academicLevelId: zod.string(),
   cellphone: zod.string().min(9).max(9),
   role: zod.string() as zod.ZodType<RoleT>,
 });
@@ -105,6 +105,7 @@ const envSchema = zod.object({
 const updateEmployeeSchema = createEmployeeSchema
   .omit({
     role: true,
+    validationCode: true,
   })
   .extend({
     bio: zod.string().min(10),

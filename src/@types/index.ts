@@ -13,7 +13,7 @@ import { EmployeeUpdateI } from "../interfaces";
 
 export type DataBaseExtraValues = "createdAt" | "updatedAt" | "id" | "hiredAt";
 export type RoleT = "MANAGER" | "EMPLOYEE";
-export type TStatus = "PENDING" | "CONFIRMED" | "CANCELED";
+export type TStatus = "PENDING" | "CONFIRMED" | "CANCELED" | "COMPLETED";
 export type ServiceModel = Omit<Service, DataBaseExtraValues>;
 export type CartModel = Omit<Cart, DataBaseExtraValues>;
 export type AppointmentModel = Omit<Appointment, DataBaseExtraValues>;
@@ -33,6 +33,7 @@ export type TPathError =
   | "password"
   | "characters"
   | "reason"
+  | "status"
   | "validationCode"
   | "contact"
   | "username"

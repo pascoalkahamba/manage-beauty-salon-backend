@@ -35,7 +35,7 @@ export default class EmployeeController {
         servicesIds,
       } = createEmployeeSchema.parse(req.body);
       const employee = await employeeService.addEmployee({
-        academicLevelId,
+        academicLevelId: +academicLevelId,
         servicesIds,
         cellphone,
         validationCode,
@@ -44,6 +44,8 @@ export default class EmployeeController {
         role,
         username,
       });
+
+      console.log("create employee", req.body);
 
       if (employee === "codeNotFound")
         throw CodeValidationToEmplyeeError.codeDoesntExists();
@@ -174,7 +176,7 @@ export default class EmployeeController {
       } = updateEmployeeSchema.parse(req.body);
 
       const employee = await employeeService.updateEmployee({
-        academicLevelId,
+        academicLevelId: +academicLevelId,
         cellphone,
         servicesIds,
         bio,
@@ -189,6 +191,9 @@ export default class EmployeeController {
       });
       if (!employee) {
         throw EmployeeError.employeeNotFound();
+      }
+      if (employee === "emailAlreadyExists") {
+        throw EmployeeError.emailAlreadyExist();
       }
       return res.status(StatusCodes.OK).json(employee);
     } catch (error) {

@@ -10,6 +10,26 @@ export const uploadFileMiddleware = async (
   next: NextFunction
 ) => {
   try {
+    // Handle base64 image
+    if (req.body?.photo && req.body.photo.startsWith("data:image")) {
+      const base64Data = req.body.photo.replace(/^data:image\/\w+;base64,/, "");
+      const buffer = Buffer.from(base64Data, "base64");
+      const filename = `uploads/${Date.now()}-base64-image.jpg`;
+
+      const storageRef = ref(storage, filename);
+      const metadata = {
+        contentType: "image/jpeg",
+      };
+
+      const snapshot = await uploadBytesResumable(storageRef, buffer, metadata);
+      const fileUrl = await getDownloadURL(snapshot.ref);
+
+      req.fileUrl = fileUrl;
+      req.fileName = filename;
+      return next();
+    }
+
+    // Handle regular file upload
     const file = req.file;
     if (!file) {
       return next();
