@@ -110,8 +110,7 @@ export default class AppointmentService {
   }
 
   async updateAppointment(appointmentInfo: UpdateAppointmentI) {
-    const { date, clientId, employeeId, serviceId, status, hour, id } =
-      appointmentInfo;
+    const { date, employeeId, hour, id } = appointmentInfo;
     const appointment = await prismaService.prisma.appointment.findFirst({
       where: {
         id,
@@ -143,25 +142,21 @@ export default class AppointmentService {
     });
     if (!appointment) return;
 
+    const employee = await prismaService.prisma.employee.findFirst({
+      where: {
+        id: employeeId,
+      },
+    });
+    if (!employee) return "employeeNotFound";
+
     const updatedAppointment = await prismaService.prisma.appointment.update({
       where: { id },
       data: {
         date,
-        status,
         hour,
-        client: {
-          connect: {
-            id: clientId,
-          },
-        },
         employee: {
           connect: {
             id: employeeId,
-          },
-        },
-        service: {
-          connect: {
-            id: serviceId,
           },
         },
       },

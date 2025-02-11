@@ -7,8 +7,13 @@ import { ZodError } from "zod";
 import { fromError } from "zod-validation-error";
 import { TPathError } from "../@types";
 import { BaseError } from "../errors/baseError";
-import { appointmentSchema, updateStatusAppointmentSchema } from "../schemas";
+import {
+  appointmentSchema,
+  updateAppointment,
+  updateStatusAppointmentSchema,
+} from "../schemas";
 import { StatusCodes } from "http-status-codes";
+import EmployeeError from "../errors/employee.error";
 
 const appointmentService = new AppointmentService();
 const appointmentValidator = new AppointmentValidator();
@@ -112,20 +117,17 @@ export default class AppointmentController {
       const { appointmentId } = req.params as unknown as {
         appointmentId: number;
       };
-      const { clientId, date, employeeId, hour, serviceId, status } =
-        appointmentSchema.parse(req.body);
+      const { date, employeeId, hour } = updateAppointment.parse(req.body);
       const appointment = await appointmentService.updateAppointment({
         id: +appointmentId,
-        clientId,
         date,
-        reason: null,
         employeeId,
         hour,
-        serviceId,
-        status,
-        cartId: null,
       });
       if (!appointment) throw AppointmentErrors.appointmentNotFound();
+      if (appointment === "employeeNotFound") {
+        throw EmployeeError.employeeNotFound();
+      }
       return res.status(StatusCodes.ACCEPTED).json(appointment);
     } catch (error) {
       if (error instanceof ZodError) {

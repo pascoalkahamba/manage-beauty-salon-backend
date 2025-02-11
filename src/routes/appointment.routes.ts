@@ -20,6 +20,10 @@ appointmentRoutes.post(
   appointmentController.updateStatusAppointment
 );
 appointmentRoutes.post(
+  "/updateAppointment/:appointmentId",
+  appointmentController.updateAppointment
+);
+appointmentRoutes.post(
   "/update/:appointmentId",
   appointmentController.updateAppointment
 );

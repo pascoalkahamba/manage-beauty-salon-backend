@@ -28,7 +28,7 @@ export default class ServiceController {
           url: req.fileUrl ?? "",
         },
         price,
-        categoryId,
+        categoryId: +categoryId,
       });
 
       if (!service) {
@@ -93,7 +93,7 @@ export default class ServiceController {
       const { name, description, price, categoryId, duration } =
         createServiceSchema.parse(req.body);
       const service = await serviceService.updateService({
-        id: serviceId,
+        id: +serviceId,
         name,
         description,
         duration,
@@ -102,7 +102,7 @@ export default class ServiceController {
           url: req.fileUrl ?? "",
         },
         price,
-        categoryId,
+        categoryId: +categoryId,
       });
       if (!service) {
         throw ServiceError.serviceNotFound();

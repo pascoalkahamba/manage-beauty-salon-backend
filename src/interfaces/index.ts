@@ -17,8 +17,11 @@ export interface PictureI {
   name: string;
 }
 
-export interface UpdateAppointmentI extends AppointmentModel {
+export interface UpdateAppointmentI {
   id: number;
+  date: Date;
+  hour: string;
+  employeeId: number;
 }
 
 export interface AddCartI {

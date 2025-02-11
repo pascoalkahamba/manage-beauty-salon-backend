@@ -103,9 +103,9 @@ model Appointment {
   status     Status   @default(PENDING)
   cart       Cart?    @relation(fields: [cartId], references: [id])
   cartId     Int?
-  client     Client   @relation(fields: [clientId], references: [id])
-  employee   Employee @relation(fields: [employeeId], references: [id])
-  service    Service  @relation(fields: [serviceId], references: [id])
+  client     Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  service    Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   payment    Payment?
 }
 
@@ -113,7 +113,7 @@ model Cart {
   id          Int           @id @default(autoincrement())
   clientId    Int           @unique
   appointment Appointment[]
-  client      Client        @relation(fields: [clientId], references: [id])
+  client      Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
 }
 
 model Payment {

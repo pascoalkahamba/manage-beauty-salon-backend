@@ -82,6 +82,10 @@ export default class EmployeeController {
         throw EmployeeError.employeeNotFound();
       }
 
+      if (employeeDeleted === "adminCannotBeDeleted") {
+        throw EmployeeError.managerCannotBeDeleted();
+      }
+
       return res.status(StatusCodes.OK).json(employeeDeleted);
     } catch (error) {
       if (error instanceof ZodError) {

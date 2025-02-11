@@ -18,7 +18,7 @@ const createServiceSchema = zod.object({
   description: zod.string().min(10),
   price: zod.number(),
   duration: zod.number(),
-  categoryId: zod.number(),
+  categoryId: zod.string(),
 });
 const createCategorySchema = zod.object({
   name: zod.string().min(6),
@@ -42,6 +42,12 @@ const appointmentSchema = zod.object({
   status: zod.string() as zod.ZodType<TStatus>,
   date: zod.string() as unknown as zod.ZodType<Date>,
   hour: zod.string(),
+});
+
+const updateAppointment = appointmentSchema.pick({
+  date: true,
+  hour: true,
+  employeeId: true,
 });
 
 const createAcademicLevelSchema = zod.object({
@@ -131,6 +137,7 @@ export {
   createClientSchema,
   createCategorySchema,
   createAcademicLevelSchema,
+  updateAppointment,
   appointmentSchema,
   createServiceSchema,
   codeValidationSchema,

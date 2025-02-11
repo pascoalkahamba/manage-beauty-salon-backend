@@ -17,6 +17,12 @@ export default class EmployeeError {
   static emailNotFound() {
     return new BaseError("Email não foi encontrado.", StatusCodes.NOT_FOUND);
   }
+  static managerCannotBeDeleted() {
+    return new BaseError(
+      "Conta do gerente não pode ser eliminado.",
+      StatusCodes.UNAUTHORIZED
+    );
+  }
   static employeeNotFound() {
     return new BaseError(
       "Funcionario não foi encontrado.",

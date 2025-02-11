@@ -211,7 +211,6 @@ export class EmployeeService {
       },
     });
     if (services.length === 0) return;
-    console.log("employee", employee);
 
     const employeeWithEmail = await prismaService.prisma.employee.findFirst({
       where: {
@@ -299,9 +298,12 @@ export class EmployeeService {
   async deleteEmployee(employeeId: number) {
     const employee = await prismaService.prisma.employee.findFirst({
       where: { id: employeeId },
+      select: { role: true },
     });
 
     if (!employee) return;
+
+    if (employee.role === "MANAGER") return "adminCannotBeDeleted";
 
     const deletedEmployee = await prismaService.prisma.employee.delete({
       where: { id: employeeId },

@@ -23,7 +23,32 @@ export class ClientService {
         categories: true,
         cart: {
           select: {
-            appointment: true,
+            appointment: {
+              select: {
+                id: true,
+                date: true,
+                hour: true,
+                status: true,
+                service: true,
+                client: {
+                  select: {
+                    username: true,
+                    email: true,
+                    cellphone: true,
+                    id: true,
+                  },
+                },
+                employee: {
+                  select: {
+                    username: true,
+                    email: true,
+                    cellphone: true,
+                    id: true,
+                    role: true,
+                  },
+                },
+              },
+            },
             id: true,
             clientId: true,
           },
@@ -34,7 +59,23 @@ export class ClientService {
             date: true,
             hour: true,
             status: true,
-            service: true,
+            service: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
+                duration: true,
+                employees: true,
+                picture: true,
+                description: true,
+                category: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
             client: {
               select: {
                 username: true,
