@@ -45,8 +45,6 @@ export default class EmployeeController {
         username,
       });
 
-      console.log("create employee", req.body);
-
       if (employee === "codeNotFound")
         throw CodeValidationToEmplyeeError.codeDoesntExists();
 
