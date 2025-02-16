@@ -112,6 +112,10 @@ export default class ServiceController {
         throw CategoryError.categoryNotFound();
       }
 
+      if (service === "serviceAlreadyExists") {
+        throw ServiceError.serviceAlreadyExists();
+      }
+
       return res.status(StatusCodes.OK).json(service);
     } catch (error) {
       if (error instanceof ZodError) {

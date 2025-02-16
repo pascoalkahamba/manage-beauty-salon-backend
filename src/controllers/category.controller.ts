@@ -41,6 +41,10 @@ export default class CategoryController {
         throw CategoryError.categoryAlreadyExists();
       }
 
+      if (category === "serviceAlreadyExist") {
+        throw ServiceError.serviceAlreadyExists();
+      }
+
       return res.status(StatusCodes.CREATED).json(category);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -93,21 +97,18 @@ export default class CategoryController {
   async updateCategory(req: Request, res: Response) {
     try {
       const categoryId = req.params.categoryId as unknown as number;
-      const { name, description, servicesIds } = updateCategorySchema.parse(
-        req.body
-      );
+      const { name, description } = updateCategorySchema.parse(req.body);
       const category = await categoryService.updateCategory({
-        id: categoryId,
+        id: +categoryId,
         name,
         description,
-        servicesIds,
       });
       if (!category) {
         throw CategoryError.categoryNotFound();
       }
 
-      if (category === "No services found") {
-        throw ServiceError.serviceNotFound();
+      if (category === "categoryAlreadyExists") {
+        throw CategoryError.categoryAlreadyExists();
       }
       return res.status(StatusCodes.OK).json(category);
     } catch (error) {

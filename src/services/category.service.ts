@@ -32,6 +32,17 @@ export default class CategoryService {
     });
     if (category) return;
 
+    const serviceNames = services.map((service) => service.name);
+    const serviceAlreadyExist = await prismaService.prisma.service.findFirst({
+      where: {
+        name: {
+          in: serviceNames,
+        },
+      },
+    });
+
+    if (serviceAlreadyExist) return "serviceAlreadyExist";
+
     const newCategory = await prismaService.prisma.category.create({
       data: {
         name,
@@ -62,21 +73,26 @@ export default class CategoryService {
   }
 
   async updateCategory(categoryInfo: UpdateCategoryI) {
-    const { name, description, servicesIds, id } = categoryInfo;
+    const { name, description, id } = categoryInfo;
     const category = await prismaService.prisma.category.findFirst({
       where: {
         id,
       },
-    });
-    if (!category) return;
-    const services = await prismaService.prisma.service.findMany({
-      where: {
-        id: {
-          in: servicesIds,
-        },
+      select: {
+        id: true,
+        name: true,
+        description: true,
       },
     });
-    if (services.length === 0) return "No services found";
+    if (!category) return;
+
+    const categoryExit = await prismaService.prisma.category.findFirst({
+      where: {
+        name,
+      },
+    });
+
+    if (categoryExit && categoryExit.id !== id) return "categoryAlreadyExists";
 
     const updatedCategory = await prismaService.prisma.category.update({
       where: {
@@ -85,9 +101,6 @@ export default class CategoryService {
       data: {
         name,
         description,
-        services: {
-          set: services.map((service) => ({ id: service.id })),
-        },
       },
     });
     return updatedCategory;

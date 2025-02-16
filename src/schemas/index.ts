@@ -55,13 +55,9 @@ const createAcademicLevelSchema = zod.object({
   description: zod.string().min(10),
 });
 
-const updateCategorySchema = createCategorySchema
-  .omit({
-    services: true,
-  })
-  .extend({
-    servicesIds: zod.number().array(),
-  });
+const updateCategorySchema = createCategorySchema.omit({
+  services: true,
+});
 
 const codeValidationSchema = zod.object({
   characters: zod.string().regex(EMPLOYEE_CODE_REGEX),

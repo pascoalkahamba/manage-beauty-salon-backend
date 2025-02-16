@@ -128,6 +128,15 @@ export default class ServiceService {
     });
     if (!category) return "No category found";
 
+    const serviceAlreadyExists = await prismaService.prisma.service.findFirst({
+      where: {
+        name,
+      },
+    });
+
+    if (serviceAlreadyExists && serviceAlreadyExists.id !== id)
+      return "serviceAlreadyExists";
+
     const updatedService = await prismaService.prisma.service.update({
       where: {
         id,

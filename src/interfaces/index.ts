@@ -92,7 +92,6 @@ export interface UpdateCategoryI {
   id: number;
   name: string;
   description?: string;
-  servicesIds: number[];
 }
 
 export interface ClientUpdateI extends CreateClientI {
