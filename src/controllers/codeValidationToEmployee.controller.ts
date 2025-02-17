@@ -26,6 +26,7 @@ export default class CodeValidationToEmployeeController {
       if (!codeValidationToEmployee) {
         throw CodeValidationToEmplyeeError.codeAlreadyExists();
       }
+
       return res.status(StatusCodes.CREATED).json(codeValidationToEmployee);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -80,14 +81,20 @@ export default class CodeValidationToEmployeeController {
   async updateCodeValidationToEmployee(req: Request, res: Response) {
     try {
       const { characters, description } = codeValidationSchema.parse(req.body);
+      const characterId = req.params.characterId as unknown as number;
       const codeValidationToEmployee =
         await codeValidationToEmployeeService.updateCode({
+          id: +characterId,
           characters,
           description,
         });
       if (!codeValidationToEmployee) {
         throw CodeValidationToEmplyeeError.codeDoesntExists();
       }
+      if (codeValidationToEmployee === "codeAlreadyExists") {
+        throw CodeValidationToEmplyeeError.codeAlreadyExists();
+      }
+
       return res.status(StatusCodes.OK).json(codeValidationToEmployee);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -103,9 +110,9 @@ export default class CodeValidationToEmployeeController {
 
   async deleteCodeValidationToEmployee(req: Request, res: Response) {
     try {
-      const { characters } = findOneCodeValidationSchema.parse(req.body);
+      const characterId = req.params.characterId as unknown as number;
       const codeValidationToEmployee =
-        await codeValidationToEmployeeService.deleteCode(characters);
+        await codeValidationToEmployeeService.deleteCode(+characterId);
       if (!codeValidationToEmployee) {
         throw CodeValidationToEmplyeeError.codeDoesntExists();
       }

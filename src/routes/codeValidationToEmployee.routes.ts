@@ -20,11 +20,11 @@ codeValidationToEmployeeRoutes.get(
   codeValidationToEmployeeController.getAllCodeValidationToEmployee
 );
 codeValidationToEmployeeRoutes.post(
-  "/update",
+  "/update/:characterId",
   codeValidationToEmployeeController.updateCodeValidationToEmployee
 );
 codeValidationToEmployeeRoutes.delete(
-  "/delete",
+  "/delete/:characterId",
   codeValidationToEmployeeController.deleteCodeValidationToEmployee
 );
 

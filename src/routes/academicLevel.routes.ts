@@ -11,13 +11,13 @@ academicLevelRoutes.get(
 );
 academicLevelRoutes.use(authMiddleware);
 academicLevelRoutes.post("/create", academicLevelController.addAcademicLevel);
-academicLevelRoutes.delete(
-  "/delete/:academicLevelId",
-  academicLevelController.delelteAcademicLevel
-);
 academicLevelRoutes.post(
   "/updateAcademicLevel/:academicLevelId",
   academicLevelController.updateAcademicLevel
+);
+academicLevelRoutes.delete(
+  "/deleteAcademicLevel/:academicLevelId",
+  academicLevelController.deleteAcademicLevel
 );
 
 export { academicLevelRoutes };

@@ -1,4 +1,5 @@
 import { CodeValidationToEmployeeModel } from "../@types";
+import { UpdateCodeValidationToEmployeeI } from "../interfaces";
 import { prismaService } from "./prisma.service";
 
 export default class CodeValidationToEmployeeService {
@@ -36,27 +37,36 @@ export default class CodeValidationToEmployeeService {
     return code;
   }
 
-  async deleteCode(characters: string) {
+  async deleteCode(characterId: number) {
     const code = await prismaService.prisma.codeValidationToEmployee.delete({
       where: {
-        characters,
+        id: characterId,
       },
     });
     return code;
   }
 
-  async updateCode(codeInfo: CodeValidationToEmployeeModel) {
-    const { characters, description } = codeInfo;
+  async updateCode(codeInfo: UpdateCodeValidationToEmployeeI) {
+    const { characters, description, id } = codeInfo;
     const code = await prismaService.prisma.codeValidationToEmployee.findFirst({
       where: {
-        characters,
+        id,
       },
     });
     if (!code) return;
+
+    const codeExit =
+      await prismaService.prisma.codeValidationToEmployee.findFirst({
+        where: {
+          characters,
+        },
+      });
+
+    if (codeExit && codeExit.id !== id) return "codeAlreadyExists";
     const updatedCode =
       await prismaService.prisma.codeValidationToEmployee.update({
         where: {
-          characters,
+          id,
         },
         data: {
           description,

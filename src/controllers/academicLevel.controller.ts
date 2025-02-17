@@ -49,6 +49,10 @@ export default class AcademicLevelController {
       if (!academicLevel) {
         throw AcademicLevelErrors.academicLevelNotFound();
       }
+
+      if (academicLevel === "academicLevelAlreadyExist") {
+        throw AcademicLevelErrors.academicLevelAlreadyExists();
+      }
       return res.status(StatusCodes.OK).json(academicLevel);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -78,7 +82,7 @@ export default class AcademicLevelController {
     }
   }
 
-  async delelteAcademicLevel(req: Request, res: Response) {
+  async deleteAcademicLevel(req: Request, res: Response) {
     try {
       const academicLevelId = req.params.academicLevelId as unknown as number;
       const academicLevel = await academicLevelService.deleteAcademicLevel(

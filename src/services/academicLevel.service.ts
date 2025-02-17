@@ -50,6 +50,15 @@ export default class AcademicLevelService {
       },
     });
     if (!academicLevel) return;
+
+    const academicLevelAlreadyExist =
+      await prismaService.prisma.academicLevel.findFirst({
+        where: {
+          name,
+        },
+      });
+    if (academicLevelAlreadyExist && academicLevelAlreadyExist.id !== id)
+      return "academicLevelAlreadyExist";
     const updatedAcademicLevel =
       await prismaService.prisma.academicLevel.update({
         where: {

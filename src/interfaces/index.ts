@@ -94,6 +94,12 @@ export interface UpdateCategoryI {
   description?: string;
 }
 
+export interface UpdateCodeValidationToEmployee {
+  id: number;
+  characters: string;
+  description: string;
+}
+
 export interface ClientUpdateI extends CreateClientI {
   id: number;
   bio: string;
