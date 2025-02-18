@@ -162,7 +162,7 @@ export class EmployeeService {
       },
       select: DEFAULT_SELECT,
     });
-    await codeValidationToEmployeeService.deleteCode(validationCode);
+    await codeValidationToEmployeeService.deleteCode(codeValidation.id);
     return newEmployee;
   }
   async updateEmployee(employeeUpdate: EmployeeUpdateI) {
